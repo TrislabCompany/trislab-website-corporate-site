@@ -1,5 +1,5 @@
 ---
-title: Welcome to the website template
+title: Welcome to Trislab
 description: How this sample site is built and what to replace first.
 published: 2026-10-28
 ---
