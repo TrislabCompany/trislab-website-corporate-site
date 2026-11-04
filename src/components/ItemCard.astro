@@ -1,0 +1,25 @@
+---
+// A service or product in a list: icon, title, summary and a link to its page.
+import type { CollectionEntry } from "astro:content";
+import { localizedPath, t, type Lang } from "../i18n";
+import { entrySlug } from "../lib/content";
+import Icon from "./Icon.astro";
+
+interface Props {
+  entry: CollectionEntry<"services"> | CollectionEntry<"products">;
+  section: "services" | "products";
+  lang: Lang;
+}
+
+const { entry, section, lang } = Astro.props;
+const href = localizedPath(lang, `/${section}/${entrySlug(entry)}`);
+---
+
+<li>
+  <article class="card">
+    <Icon name={entry.data.icon} />
+    <h3><a href={href}>{entry.data.title}</a></h3>
+    <p>{entry.data.summary}</p>
+    <a class="more" href={href} aria-hidden="true" tabindex="-1">{t(lang, "cta.readMore")} →</a>
+  </article>
+</li>

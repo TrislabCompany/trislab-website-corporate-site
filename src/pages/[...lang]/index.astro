@@ -1,0 +1,48 @@
+---
+import ContactCta from "../../components/ContactCta.astro";
+import ItemCard from "../../components/ItemCard.astro";
+import { languagePaths, localizedPath, t, type Lang } from "../../i18n";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { sortedItems } from "../../lib/items";
+import site from "../../site.config";
+
+export const getStaticPaths = languagePaths;
+
+const { lang } = Astro.props as { lang: Lang };
+const services = await sortedItems("services", lang);
+const products = await sortedItems("products", lang);
+---
+
+<BaseLayout title={site.name} lang={lang}>
+  <section class="hero">
+    <p class="eyebrow">{t(lang, "hero.eyebrow")}</p>
+    <h1>{t(lang, "hero.heading")}</h1>
+    <p class="lead">{t(lang, "hero.subheading")}</p>
+    <div class="actions">
+      <a class="button" href={localizedPath(lang, "/contact")}>{t(lang, "cta.contactSales")}</a>
+      <a class="button secondary" href={localizedPath(lang, "/services")}>{t(lang, "cta.services")}</a>
+    </div>
+    <p class="badge">
+      <strong><a href={localizedPath(lang, "/partners")}>{t(lang, "hero.badge")}</a></strong>
+      <span>{t(lang, "hero.regions")}</span>
+    </p>
+  </section>
+
+  <section class="section" aria-labelledby="services">
+    <h2 id="services">{t(lang, "services.heading")}</h2>
+    <p class="lead">{t(lang, "services.lead")}</p>
+    <ul class="grid">
+      {services.map((entry) => <ItemCard entry={entry} section="services" lang={lang} />)}
+    </ul>
+  </section>
+
+  <section class="section" aria-labelledby="products">
+    <h2 id="products">{t(lang, "products.heading")}</h2>
+    <p class="lead">{t(lang, "products.lead")}</p>
+    <ul class="grid">
+      {products.map((entry) => <ItemCard entry={entry} section="products" lang={lang} />)}
+    </ul>
+  </section>
+
+  <ContactCta lang={lang} />
+</BaseLayout>

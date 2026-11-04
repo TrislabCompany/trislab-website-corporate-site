@@ -1,0 +1,17 @@
+---
+import ContactDetails from "../../components/ContactDetails.astro";
+import { languagePaths, t, type Lang } from "../../i18n";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export const getStaticPaths = languagePaths;
+
+const { lang } = Astro.props as { lang: Lang };
+---
+
+<BaseLayout title={t(lang, "contact.title")} description={t(lang, "contact.lead")} lang={lang}>
+  <div class="prose">
+    <h1>{t(lang, "contact.title")}</h1>
+    <p class="lead">{t(lang, "contact.lead")}</p>
+    <ContactDetails lang={lang} />
+  </div>
+</BaseLayout>

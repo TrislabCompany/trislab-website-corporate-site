@@ -1,0 +1,36 @@
+---
+// Only confirmed partners are shown: Netwrix, with permission (2026-11-04).
+// The Netwrix logo goes here once its file is received.
+import ContactCta from "../../components/ContactCta.astro";
+import { languagePaths, localizedPath, t, type Lang } from "../../i18n";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export const getStaticPaths = languagePaths;
+
+const { lang } = Astro.props as { lang: Lang };
+---
+
+<BaseLayout title={t(lang, "partners.heading")} description={t(lang, "partners.lead")} lang={lang}>
+  <h1>{t(lang, "partners.heading")}</h1>
+  <p class="lead">{t(lang, "partners.lead")}</p>
+
+  <section class="section prose" aria-labelledby="netwrix">
+    <article class="card">
+      <p class="eyebrow">{t(lang, "partners.netwrixRole")}</p>
+      <h2 id="netwrix">Netwrix</h2>
+      <p>{t(lang, "partners.netwrixText")}</p>
+      <dl class="facts">
+        <dt>{t(lang, "partners.regions")}</dt>
+        <dd>{t(lang, "hero.regions")}</dd>
+      </dl>
+      <p>
+        <a href={localizedPath(lang, "/services/netwrix-solutions")}>{t(lang, "cta.readMore")} →</a>
+      </p>
+      <p>
+        <a href="https://www.netwrix.com/" rel="noopener noreferrer">{t(lang, "partners.visit")}</a>
+      </p>
+    </article>
+  </section>
+
+  <ContactCta lang={lang} />
+</BaseLayout>
