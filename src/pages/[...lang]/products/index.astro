@@ -1,0 +1,41 @@
+---
+import ContactCta from "../../../components/ContactCta.astro";
+import ItemCard from "../../../components/ItemCard.astro";
+import { languagePaths, t, type Lang } from "../../../i18n";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { sortedItems } from "../../../lib/items";
+
+export const getStaticPaths = languagePaths;
+
+const { lang } = Astro.props as { lang: Lang };
+const products = await sortedItems("products", lang);
+const groups = [
+  { id: "saas", heading: t(lang, "products.saas"), lead: undefined },
+  { id: "security", heading: t(lang, "products.security"), lead: t(lang, "products.securityLead") },
+  { id: "compliance", heading: t(lang, "products.compliance"), lead: undefined },
+] as const;
+---
+
+<BaseLayout title={t(lang, "products.heading")} description={t(lang, "products.lead")} lang={lang}>
+  <h1>{t(lang, "products.heading")}</h1>
+  <p class="lead">{t(lang, "products.lead")}</p>
+  {
+    groups.map(({ id, heading, lead }) => {
+      const items = products.filter((entry) => entry.data.group === id);
+      return (
+        items.length > 0 && (
+          <section class="section" aria-labelledby={id}>
+            <h2 id={id}>{heading}</h2>
+            {lead && <p class="lead">{lead}</p>}
+            <ul class="grid">
+              {items.map((entry) => (
+                <ItemCard entry={entry} section="products" lang={lang} />
+              ))}
+            </ul>
+          </section>
+        )
+      );
+    })
+  }
+  <ContactCta lang={lang} />
+</BaseLayout>

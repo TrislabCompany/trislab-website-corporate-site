@@ -1,0 +1,45 @@
+---
+import ContactCta from "../../components/ContactCta.astro";
+import { languagePaths, t, type Lang } from "../../i18n";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export const getStaticPaths = languagePaths;
+
+const { lang } = Astro.props as { lang: Lang };
+// Only figures Trislab stands behind: the four markets and the three services.
+// The current site's "5 official partnerships" is left out: only Netwrix is
+// a confirmed partner.
+const stats = [
+  { value: "4", label: t(lang, "about.markets") },
+  { value: "3", label: t(lang, "about.serviceTypes") },
+];
+const visibility = [t(lang, "about.who"), t(lang, "about.when"), t(lang, "about.where"), t(lang, "about.what")];
+---
+
+<BaseLayout title={t(lang, "about.heading")} lang={lang}>
+  <div class="prose">
+    <h1>{t(lang, "about.heading")}</h1>
+    <p class="lead">{t(lang, "about.p1")}</p>
+    <p>{t(lang, "about.p2")}</p>
+    <p>{t(lang, "about.p3")}</p>
+
+    <section class="section" aria-labelledby="visibility">
+      <h2 id="visibility">{t(lang, "about.visibility")}</h2>
+      <ul class="visibility">
+        {visibility.map((word) => <li>{word}</li>)}
+      </ul>
+    </section>
+
+    <ul class="stats">
+      {
+        stats.map(({ value, label }) => (
+          <li>
+            <strong>{value}</strong>
+            <span>{label}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+  <ContactCta lang={lang} />
+</BaseLayout>

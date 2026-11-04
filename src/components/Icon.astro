@@ -1,0 +1,69 @@
+---
+// The line icons of services and products, drawn inline: no icon font and no
+// outside file. Decorative only.
+interface Props {
+  name: "code" | "cloud" | "shield" | "platform" | "data" | "key" | "identity" | "radar" | "compliance";
+}
+
+const { name } = Astro.props;
+const shield = "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z";
+---
+
+<svg
+  class="icon"
+  width="28"
+  height="28"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+>
+  {name === "code" && <path d="M16 18l6-6-6-6M8 6l-6 6 6 6" />}
+  {name === "cloud" && <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z" />}
+  {name === "shield" && <path d={shield} />}
+  {name === "platform" && <path d="M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />}
+  {
+    name === "data" && (
+      <>
+        <ellipse cx="12" cy="5" rx="9" ry="3" />
+        <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
+      </>
+    )
+  }
+  {
+    name === "key" && (
+      <>
+        <circle cx="7.5" cy="15.5" r="5.5" />
+        <path d="m21 2-9.6 9.6M15.5 7.5l3 3L22 7l-3-3" />
+      </>
+    )
+  }
+  {
+    name === "identity" && (
+      <>
+        <circle cx="12" cy="8" r="4" />
+        <path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1" />
+      </>
+    )
+  }
+  {
+    name === "radar" && (
+      <>
+        <circle cx="12" cy="12" r="10" />
+        <circle cx="12" cy="12" r="6" />
+        <circle cx="12" cy="12" r="2" />
+      </>
+    )
+  }
+  {
+    name === "compliance" && (
+      <>
+        <path d={shield} />
+        <path d="m9 12 2 2 4-4" />
+      </>
+    )
+  }
+</svg>

@@ -1,0 +1,21 @@
+---
+import ContactCta from "../../../components/ContactCta.astro";
+import ItemCard from "../../../components/ItemCard.astro";
+import { languagePaths, t, type Lang } from "../../../i18n";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { sortedItems } from "../../../lib/items";
+
+export const getStaticPaths = languagePaths;
+
+const { lang } = Astro.props as { lang: Lang };
+const services = await sortedItems("services", lang);
+---
+
+<BaseLayout title={t(lang, "services.heading")} description={t(lang, "services.lead")} lang={lang}>
+  <h1>{t(lang, "services.heading")}</h1>
+  <p class="lead">{t(lang, "services.lead")}</p>
+  <ul class="grid">
+    {services.map((entry) => <ItemCard entry={entry} section="services" lang={lang} />)}
+  </ul>
+  <ContactCta lang={lang} />
+</BaseLayout>

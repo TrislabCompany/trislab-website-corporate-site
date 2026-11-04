@@ -1,20 +1,42 @@
 ---
+import { localizedPath, t, type Lang } from "../i18n";
+import site from "../site.config";
+import LanguageSwitch from "./LanguageSwitch.astro";
+import Logo from "./Logo.astro";
+
+interface Props {
+  lang: Lang;
+  path: string;
+  available?: readonly Lang[];
+}
+
+const { lang, path, available } = Astro.props;
 const links = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
+  { href: "/services", label: t(lang, "nav.services") },
+  { href: "/products", label: t(lang, "nav.products") },
+  { href: "/partners", label: t(lang, "nav.partners") },
+  { href: "/about", label: t(lang, "nav.about") },
+  { href: "/contact", label: t(lang, "nav.contact") },
 ];
-const path = Astro.url.pathname.replace(/\/$/, "") || "/";
+// A section's link stays marked on its detail pages (/services/cloud-services).
+const current = (href: string) => path === href || path.startsWith(`${href}/`);
 ---
 
 <header class="site-header">
-  <a class="brand" href="/">Trislab</a>
-  <nav aria-label="Main">
-    {
-      links.map(({ href, label }) => (
-        <a href={href} aria-current={path === href ? "page" : undefined}>
-          {label}
-        </a>
-      ))
-    }
-  </nav>
+  <div class="wrap header-row">
+    <a class="brand" href={localizedPath(lang)}>
+      <Logo />
+      <span>{site.name}</span>
+    </a>
+    <nav class="main-nav" aria-label={t(lang, "nav.main")}>
+      {
+        links.map(({ href, label }) => (
+          <a href={localizedPath(lang, href)} aria-current={current(href) ? "page" : undefined}>
+            {label}
+          </a>
+        ))
+      }
+    </nav>
+    <LanguageSwitch lang={lang} path={path} available={available} />
+  </div>
 </header>
