@@ -9,16 +9,19 @@ interface Props {
   entry: CollectionEntry<"services"> | CollectionEntry<"products">;
   section: "services" | "products";
   lang: Lang;
+  // The card's heading level: one below the heading of the list it is in.
+  level?: 2 | 3;
 }
 
-const { entry, section, lang } = Astro.props;
+const { entry, section, lang, level = 3 } = Astro.props;
+const Heading = `h${level}` as const;
 const href = localizedPath(lang, `/${section}/${entrySlug(entry)}`);
 ---
 
 <li>
   <article class="card">
     <Icon name={entry.data.icon} />
-    <h3><a href={href}>{entry.data.title}</a></h3>
+    <Heading><a href={href}>{entry.data.title}</a></Heading>
     <p>{entry.data.summary}</p>
     <a class="more" href={href} aria-hidden="true" tabindex="-1">{t(lang, "cta.readMore")} →</a>
   </article>

@@ -8,6 +8,7 @@ const sl: UiStrings = {
   "nav.about": "O nas",
   "nav.contact": "Kontakt",
   "nav.main": "Glavni meni",
+  "nav.skip": "Preskoči na vsebino",
   "language.switch": "Jezik",
 
   "hero.eyebrow": "Oblačna arhitektura, sistemski inženiring in kibernetska varnost",

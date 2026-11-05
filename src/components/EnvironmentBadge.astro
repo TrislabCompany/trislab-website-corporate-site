@@ -1,18 +1,24 @@
 ---
 // Shows the Environment the container runs in, read from /config.json in the
-// browser. The same image runs in every Environment. Hidden in prod, where
-// visitors don't need it.
+// browser. The same image runs in every Environment. The badge ships hidden and
+// is shown only when the Environment is known and is not prod, so production
+// visitors never see it: not while the page loads, and not without JavaScript.
+// With `pnpm dev` there is no /config.json, and it shows "local".
 ---
 
-<span class="environment" data-environment>Environment: local</span>
+<span class="environment" data-environment hidden></span>
 
 <script>
   import { loadConfig } from "../lib/config";
 
   const config = await loadConfig();
-  const environment = config.PLATFORM_ENVIRONMENT ?? "local";
-  document.querySelectorAll("[data-environment]").forEach((element) => {
-    if (environment === "prod") element.remove();
-    else element.textContent = `Environment: ${environment}`;
+  const environment = config.PLATFORM_ENVIRONMENT ?? (import.meta.env.DEV ? "local" : undefined);
+  document.querySelectorAll<HTMLElement>("[data-environment]").forEach((element) => {
+    if (!environment || environment === "prod") {
+      element.remove();
+      return;
+    }
+    element.textContent = `Environment: ${environment}`;
+    element.hidden = false;
   });
 </script>
