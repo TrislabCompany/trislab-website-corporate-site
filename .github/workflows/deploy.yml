@@ -21,4 +21,4 @@ jobs:
       id-token: write
       attestations: write
       actions: read
-    uses: TrislabCompany/tl-platform/.github/workflows/app-deploy.yml@app-workflows/v0.2.0
+    uses: TrislabCompany/tl-platform/.github/workflows/app-deploy.yml@app-workflows/v0.3.0-rc.1
