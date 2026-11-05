@@ -15,7 +15,7 @@ const services = await sortedItems("services", lang);
   <h1>{t(lang, "services.heading")}</h1>
   <p class="lead">{t(lang, "services.lead")}</p>
   <ul class="grid">
-    {services.map((entry) => <ItemCard entry={entry} section="services" lang={lang} />)}
+    {services.map((entry) => <ItemCard entry={entry} section="services" lang={lang} level={2} />)}
   </ul>
   <ContactCta lang={lang} />
 </BaseLayout>

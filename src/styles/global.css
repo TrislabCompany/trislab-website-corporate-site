@@ -308,17 +308,17 @@ main {
   border-radius: var(--radius);
 }
 
-.card h3 {
+.card :is(h2, h3) {
   margin: 0.25rem 0 0;
   font-size: 1.125rem;
 }
 
-.card h3 a {
+.card :is(h2, h3) a {
   color: var(--text);
   text-decoration: none;
 }
 
-.card h3 a:hover {
+.card :is(h2, h3) a:hover {
   color: var(--accent-text);
 }
 
@@ -451,6 +451,23 @@ main {
   margin: 1.5rem 0;
 }
 
+/* On a narrow screen the terms go above their values, so long terms such as
+   "Registration number" never push the page wider than the screen. */
+@media (max-width: 30rem) {
+  .imprint {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+
+  .imprint dd + dt {
+    margin-top: 0.75rem;
+  }
+}
+
+.imprint dd {
+  overflow-wrap: anywhere;
+}
+
 .facts dt,
 .imprint dt {
   color: var(--muted);
@@ -468,4 +485,27 @@ time {
 
 .environment {
   opacity: 0.8;
+}
+
+/* The first link on every page: hidden until it gets keyboard focus, then it
+   jumps past the header to the main content (WCAG 2.4.1). */
+.skip-link {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 100;
+  padding: 0.5rem 1rem;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  border-radius: var(--radius);
+  font-weight: 600;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+main:focus {
+  outline: none;
 }

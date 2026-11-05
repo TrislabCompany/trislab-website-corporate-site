@@ -10,6 +10,7 @@ const en = {
   "nav.about": "About",
   "nav.contact": "Contact",
   "nav.main": "Main",
+  "nav.skip": "Skip to content",
   "language.switch": "Language",
 
   "hero.eyebrow": "Cloud architecture, systems engineering and cybersecurity",

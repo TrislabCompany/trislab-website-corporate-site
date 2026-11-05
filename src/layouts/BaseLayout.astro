@@ -2,7 +2,7 @@
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
 import StructuredData from "../components/StructuredData.astro";
-import { defaultLanguage, languages, localizedPath, unlocalizedPath, type Lang } from "../i18n";
+import { defaultLanguage, languages, localizedPath, t, unlocalizedPath, type Lang } from "../i18n";
 import site from "../site.config";
 import "../styles/global.css";
 
@@ -55,8 +55,9 @@ const ogLocale: Record<Lang, string> = { en: "en_GB", sl: "sl_SI", hr: "hr_HR", 
     <StructuredData />
   </head>
   <body>
+    <a class="skip-link" href="#main">{t(lang, "nav.skip")}</a>
     <Header lang={lang} path={path} available={available} />
-    <main>
+    <main id="main" tabindex="-1">
       <slot />
     </main>
     <Footer lang={lang} />

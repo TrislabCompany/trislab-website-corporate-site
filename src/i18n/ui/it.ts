@@ -8,6 +8,7 @@ const it: UiStrings = {
   "nav.about": "Chi siamo",
   "nav.contact": "Contatti",
   "nav.main": "Navigazione principale",
+  "nav.skip": "Vai al contenuto",
   "language.switch": "Lingua",
 
   "hero.eyebrow": "Architettura cloud, ingegneria dei sistemi e cybersecurity",
