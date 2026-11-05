@@ -14,7 +14,8 @@ This file is the guide for every AI coding tool (Claude Code, Cursor, Codex, …
 | `Dockerfile`, `nginx/`, `docker-entrypoint.d/` | The image, nginx's configuration, and the script that writes `/config.json` |
 | `platform.yaml` | The image and the sizing of the app, within the stamp's caps ([docs/deployment.md](docs/deployment.md#platformyaml-and-the-caps)) |
 | `.github/workflows/` | Thin callers of the platform's reusable workflows |
-| `.agents/skills/` | The skills below; the only place skills live |
+| `.agents/skills/` | The skills below; the only place skills are written |
+| `.claude/skills/` | One pointer per skill, with the same front matter, so that Claude Code lists it |
 | `.template-version` | The template release this repository was last updated to ([docs/upgrading/README.md](docs/upgrading/README.md)) |
 
 ## Rules
@@ -25,11 +26,11 @@ This file is the guide for every AI coding tool (Claude Code, Cursor, Codex, …
 - **`platform.yaml` stays within the stamp's caps.** More needs a stamp change ([docs/deployment.md](docs/deployment.md#asking-for-more)).
 - **No secrets** in the repository, the image or `/config.json`. Settings come from the platform as `PLATFORM_*` and `PUBLIC_*` ([docs/configuration.md](docs/configuration.md)).
 - **The repository is public.** No personal data, client contracts, prices or internal addresses in code, docs, PRs or commits.
-- Never deploy by hand (`az`, the portal). The workflows deploy, and the `release` skill runs them.
+- **Deploy and release with the `release` skill** ([docs/deployment.md](docs/deployment.md#release-with-the-agent)): `dev` runs the newest `main`, and the `release` tier runs tags. Never deploy by hand (`az`, the portal).
 
 ## Skills
 
-Skills live only in `.agents/skills/<name>/SKILL.md`. When a task matches a skill, read that file and follow it.
+Skills live only in `.agents/skills/<name>/SKILL.md`. When a task matches a skill, read that file and follow it. Claude Code finds skills only in `.claude/skills/`, so each skill also has a pointer `.claude/skills/<name>/SKILL.md`: the same front matter, and a body that sends the agent to the real file. Add one with every new skill; `pnpm test` fails without it.
 
 ### Template skills
 
