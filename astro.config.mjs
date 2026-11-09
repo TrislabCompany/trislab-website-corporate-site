@@ -1,4 +1,5 @@
 // @ts-check
+import { writeFile } from "node:fs/promises";
 import sitemap from "@astrojs/sitemap";
 import { defineConfig } from "astro/config";
 import site, { languages } from "./src/site.config";
@@ -19,6 +20,21 @@ function canonical(url) {
   return url.replace(/\/+$/, "");
 }
 
+// "/" leads to the default language. Astro's redirect is a page with a
+// meta refresh, which search engines treat as weaker than a real redirect, so
+// Cloudflare Pages also gets dist/_redirects: a 301 from "/" that it answers
+// before it serves any file. The Astro page stays for `pnpm preview`.
+/** @type {import("astro").AstroIntegration} */
+const rootRedirect = {
+  name: "root-redirect",
+  hooks: {
+    "astro:build:done": async ({ dir }) => {
+      if (!prefixed) return;
+      await writeFile(new URL("_redirects", dir), `/ /${site.defaultLanguage} 301\n`);
+    },
+  },
+};
+
 // output: "static" writes plain files to dist/, which Cloudflare Pages
 // serves. Keep it: the site has no server code.
 export default defineConfig({
@@ -26,6 +42,7 @@ export default defineConfig({
   site: site.url,
   redirects: prefixed ? { "/": `/${site.defaultLanguage}` } : {},
   integrations: [
+    rootRedirect,
     // sitemap-index.xml with every page in every language, and the other
     // languages of each page as alternates.
     sitemap({

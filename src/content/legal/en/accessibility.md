@@ -1,33 +1,41 @@
 ---
 title: "Accessibility statement"
-description: "How accessible trislab.com is, how we checked it, and how to tell us about a problem."
-updated: 2026-11-05
+description: "Trislab's commitment to digital accessibility, the standard trislab.com is built to, and how to report a barrier."
 ---
 
-## Our aim
+## Our commitment
 
-Trislab wants this website to be usable by everyone, including people who use a keyboard instead of a mouse, a screen reader, or a larger text size. The site is built to meet the Web Content Accessibility Guidelines (WCAG) 2.1, level AA.
+Trislab d.o.o. is committed to making trislab.com accessible to as many people as possible, whatever their abilities and whatever technology they use. This includes people who navigate with a keyboard, use a screen reader or other assistive technology, or enlarge the text.
 
-## Status
+## Standard applied
 
-From our own assessment, we believe trislab.com meets WCAG 2.1 level AA. We know of no part of the site that does not.
+The website is designed and built to the Web Content Accessibility Guidelines (WCAG) 2.1, level AA, published by the World Wide Web Consortium (W3C).
 
-## How we checked
+## Conformance status
 
-We assessed the site ourselves on 5 November 2026:
+trislab.com aims to conform with WCAG 2.1 level AA. Conformance has not been verified by an independent accessibility auditor, so this statement does not claim formal conformance. Our internal tests, described below, have not found any barriers.
 
-- An automated check with axe-core of every page, in every language, on a wide screen and on a 320 pixel wide phone screen. It found no problems.
-- A check by hand: the whole site can be used with the keyboard alone, with a visible focus, and a "Skip to content" link at the start of each page. The pages keep working when zoomed to 200% or shown on a narrow screen, without scrolling sideways. Text and links have enough contrast against the background.
+## How we test
 
-The site has not yet been tested with every screen reader, and it has not been audited by an independent party.
+Our internal tests cover every page of the website, in every language:
 
-## What makes the site easier to use
+- **Automated testing** with axe-core against the WCAG 2.1 level A and AA rules, on a desktop screen and on a 320 pixel wide mobile screen. These tests run automatically on every change to the website, and a change that fails them is not published.
+- **Keyboard**: every function can be reached and used with the keyboard alone, the focus is always visible, and each page starts with a "Skip to content" link.
+- **Zoom and reflow**: the content stays complete and usable when zoomed to 200% and on narrow screens, without horizontal scrolling.
+- **Contrast**: text and interactive elements meet the WCAG contrast ratios.
+- **Structure**: every page has one main heading, headings in a logical order, landmarks, and its language declared.
 
-- Every page has a main heading, headings in order, and the language of its text set.
-- All information is given as text. The logo and icons are decorative and hidden from screen readers.
-- The site sets no cookies, shows no pop-ups, and plays no sound or moving content.
-- The same pages exist in English, Slovenian, Croatian, Serbian and Italian.
+## Accessibility features
 
-## Feedback
+- All information is available as text. The logo and icons are decorative and hidden from assistive technology.
+- The website sets no cookies, shows no pop-ups or banners, and contains no audio, video or moving content.
+- The website uses no JavaScript, so all content and functions work in any browser.
+- All content is available in English, Slovenian, Croatian, Serbian and Italian.
 
-If something on this site is hard to use, or you need its content in another form, write to [info@trislab.com](mailto:info@trislab.com). Tell us the page and the problem, and we will answer and fix what we can.
+## Known limitations
+
+The website has not been tested with every combination of screen reader and browser. If you meet a barrier, please let us know.
+
+## Feedback and contact
+
+If any part of this website is difficult to use, or you need its content in another format, write to [info@trislab.com](mailto:info@trislab.com). Please name the page and describe the problem. We will reply and, where we can, remove the barrier.

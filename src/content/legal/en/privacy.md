@@ -1,25 +1,62 @@
 ---
 title: "Privacy policy"
-description: "How trislab.com handles personal data."
-updated: 2026-11-04
+description: "How Trislab processes personal data when you visit trislab.com or contact us."
 ---
 
-<!-- DRAFT for staging. Replace with the text from Trislab's shared legal pack (D-09), filled in and reviewed by a lawyer, before production. -->
+This policy explains which personal data Trislab processes when you visit trislab.com or contact us, why we process it, and what rights you have under the General Data Protection Regulation (GDPR).
 
-## Who is responsible
+## Data controller
 
-Trislab d.o.o., Ankaranska cesta 7b, 6000 Koper, Slovenia, is responsible for this website. Questions about your data go to [info@trislab.com](mailto:info@trislab.com).
+The controller responsible for this website is Trislab d.o.o., Ankaranska cesta 7b, 6000 Koper, Slovenia. Questions about your personal data go to [info@trislab.com](mailto:info@trislab.com).
 
-## What this site collects
+## Visiting the website
 
-This site sets no cookies, has no analytics and loads no outside services. It has no forms and no user accounts.
+trislab.com is a static website. It has no forms, no user accounts, and no comment or newsletter functions.
 
-To deliver and protect the site, our hosting and our network provider (Cloudflare) process technical data for every request: the IP address, the time, the page asked for and the browser. They keep it only as long as operating and securing the site needs.
+To deliver the pages and to protect the website against attacks, our hosting and network provider, Cloudflare, automatically processes technical data for every request: the IP address, the date and time, the page requested, and the browser and operating system. This data is not used to identify you or to build a profile.
 
-## E-mail
+- **Purpose**: delivering the website, and keeping it secure and available.
+- **Legal basis**: our legitimate interest in the secure and reliable operation of the website (Article 6(1)(f) GDPR).
+- **Retention**: only as long as operation and security require, after which it is deleted or anonymised.
 
-If you write to us, we use your message and address only to answer you and to handle your enquiry.
+## Cookies, analytics and third-party content
+
+The website sets no cookies and stores nothing on your device. It uses no analytics, no advertising or social media tools, and no tracking. All fonts and images are served from our own website; no content is loaded from third parties.
+
+## Contacting us by e-mail
+
+When you write to us, we process your e-mail address, your name if you give it, and the content of your message.
+
+- **Purpose**: answering your enquiry and any follow-up.
+- **Legal basis**: steps prior to entering into a contract, at your request (Article 6(1)(b) GDPR), or our legitimate interest in answering enquiries (Article 6(1)(f) GDPR).
+- **Retention**: as long as needed to handle your enquiry, and beyond that only where the law requires us to keep it.
+- **Providing data**: voluntary. Without an e-mail address we cannot reply to you.
+
+## Recipients and transfers
+
+Our hosting, network and e-mail providers process data on our behalf as processors, under data processing agreements, and only on our instructions. Cloudflare, Inc. is based in the United States. Transfers to the United States are based on the EU–U.S. Data Privacy Framework and the European Commission's standard contractual clauses.
+
+We do not sell personal data and do not pass it on to anyone else, unless the law requires us to.
+
+## Automated decision-making
+
+We do not use automated decision-making or profiling.
 
 ## Your rights
 
-Under the General Data Protection Regulation (GDPR) you may ask for access to your data, its correction or deletion, a limit on its use, and you may object to its use. Write to [info@trislab.com](mailto:info@trislab.com). You may also complain to the supervisory authority, in Slovenia the Information Commissioner (Informacijski pooblaščenec).
+Under the GDPR you have the right to:
+
+- access the personal data we hold about you;
+- have inaccurate data corrected;
+- have your data deleted;
+- restrict its processing;
+- data portability;
+- object to processing based on our legitimate interest.
+
+To exercise these rights, write to [info@trislab.com](mailto:info@trislab.com).
+
+You also have the right to lodge a complaint with a supervisory authority. In Slovenia, this is the Information Commissioner of the Republic of Slovenia (Informacijski pooblaščenec), Dunajska cesta 22, 1000 Ljubljana, [www.ip-rs.si](https://www.ip-rs.si).
+
+## Changes to this policy
+
+We update this policy when our processing of personal data changes. The current version is always published on this page.

@@ -55,6 +55,8 @@ export interface SiteSettings<L extends string> {
     privacy: boolean;
     /** Only where the law requires one, or the client wants it. */
     accessibility: boolean;
+    /** The website's carbon footprint and the company's environmental measures (ESG). */
+    sustainability: boolean;
   };
 
   /** The JSON-LD on every page: Organization, or LocalBusiness when customers visit the address. */

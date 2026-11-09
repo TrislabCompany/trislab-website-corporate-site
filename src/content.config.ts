@@ -43,15 +43,16 @@ const products = defineCollection({
   }),
 });
 
-// The texts of the privacy policy and the accessibility statement, from the
-// shared legal pack: src/content/legal/<language>/privacy.md and
-// accessibility.md. The imprint is built from src/site.config.ts.
+// The texts of the privacy policy, the accessibility statement and the
+// sustainability page: src/content/legal/<language>/privacy.md,
+// accessibility.md and sustainability.md. The imprint is built from
+// src/site.config.ts. The pages show no date: no law asks for one, and a date
+// that is not kept up to date does more harm than good.
 const legal = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/legal" }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
-    updated: z.coerce.date(),
   }),
 });
 

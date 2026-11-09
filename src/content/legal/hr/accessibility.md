@@ -1,33 +1,41 @@
 ---
 title: "Izjava o pristupačnosti"
-description: "Koliko je stranica trislab.com pristupačna, kako smo to provjerili i kako nam prijaviti problem."
-updated: 2026-11-05
+description: "Predanost tvrtke Trislab digitalnoj pristupačnosti, standard prema kojem je izrađena stranica trislab.com i kako nam prijaviti prepreku."
 ---
 
-## Naš cilj
+## Naša predanost
 
-Trislab želi da ova web-stranica bude upotrebljiva svima, uključujući osobe koje umjesto miša koriste tipkovnicu, čitač zaslona ili veći tekst. Stranica je izrađena tako da zadovoljava Smjernice za pristupačnost web-sadržaja (WCAG) 2.1, razina AA.
+Trislab d.o.o. nastoji da stranica trislab.com bude pristupačna što većem broju ljudi, bez obzira na njihove sposobnosti i tehnologiju koju koriste. To uključuje ljude koji se kreću tipkovnicom, koriste čitač zaslona ili drugu pomoćnu tehnologiju ili povećavaju tekst.
 
-## Stanje
+## Primijenjeni standard
 
-Prema našoj vlastitoj procjeni, stranica trislab.com zadovoljava WCAG 2.1, razinu AA. Ne znamo ni za jedan dio stranice koji ih ne zadovoljava.
+Mrežna stranica osmišljena je i izrađena prema Smjernicama za pristupačnost mrežnog sadržaja (WCAG) 2.1, razina AA, koje objavljuje World Wide Web Consortium (W3C).
 
-## Kako smo provjerili
+## Status usklađenosti
 
-Stranicu smo sami procijenili 5. studenoga 2026.:
+Cilj mrežnog mjesta trislab.com je usklađenost sa smjernicama WCAG 2.1, razina AA. Usklađenost nije provjerio neovisni revizor pristupačnosti, pa ova izjava ne tvrdi formalnu usklađenost. Naša interna testiranja, opisana u nastavku, nisu utvrdila prepreke.
 
-- Automatskom provjerom alatom axe-core pregledali smo sve stranice na svim jezicima, na širokom zaslonu i na zaslonu mobitela širine 320 piksela. Nije pronašla probleme.
-- Ručno smo provjerili da se cijela stranica može koristiti samo tipkovnicom, uz vidljiv fokus i poveznicu „Preskoči na sadržaj” na početku svake stranice. Stranice rade i pri povećanju od 200 % i na uskom zaslonu, bez vodoravnog pomicanja. Tekst i poveznice imaju dovoljan kontrast u odnosu na pozadinu.
+## Kako testiramo
 
-Stranica još nije testirana sa svim čitačima zaslona i nije je pregledala neovisna organizacija.
+Naša interna testiranja obuhvaćaju sve stranice mrežnog mjesta na svim jezicima:
 
-## Što olakšava korištenje stranice
+- **Automatsko testiranje** alatom axe-core prema pravilima WCAG 2.1 razine A i AA, na stolnom zaslonu i na mobilnom zaslonu širokom 320 piksela. Testiranje se automatski provodi pri svakoj promjeni mrežnog mjesta, a promjena koja ga ne prođe ne objavljuje se.
+- **Tipkovnica**: sve funkcije dostupne su i upotrebljive samo tipkovnicom, fokus je uvijek vidljiv, a svaka stranica počinje poveznicom „Preskoči na sadržaj”.
+- **Povećanje i prilagodba**: sadržaj ostaje potpun i upotrebljiv pri povećanju od 200 % i na uskim zaslonima, bez vodoravnog pomicanja.
+- **Kontrast**: tekst i interaktivni elementi zadovoljavaju omjere kontrasta prema WCAG-u.
+- **Struktura**: svaka stranica ima jedan glavni naslov, naslove u logičnom redoslijedu, orijentacijske regije i označen jezik.
 
-- Svaka stranica ima glavni naslov, naslove pravilnim redoslijedom i označen jezik teksta.
-- Sve informacije dane su tekstom. Logotip i ikone su ukrasni i skriveni od čitača zaslona.
-- Stranica ne postavlja kolačiće, ne prikazuje skočne prozore i ne reproducira zvuk ni pokretni sadržaj.
-- Iste stranice dostupne su na engleskom, slovenskom, hrvatskom, srpskom i talijanskom.
+## Značajke pristupačnosti
 
-## Povratne informacije
+- Sve informacije dostupne su kao tekst. Logotip i ikone su ukrasni i skriveni od pomoćne tehnologije.
+- Stranica ne postavlja kolačiće, ne prikazuje skočne prozore ni natpise i ne sadrži zvuk, video ni pokretni sadržaj.
+- Mrežno mjesto ne koristi JavaScript, pa sav sadržaj i sve funkcije rade u svakom pregledniku.
+- Sav sadržaj dostupan je na engleskom, slovenskom, hrvatskom, srpskom i talijanskom jeziku.
 
-Ako je nešto na ovoj stranici teško koristiti ili vam je sadržaj potreban u drugom obliku, pišite na [info@trislab.com](mailto:info@trislab.com). Navedite stranicu i problem, a mi ćemo odgovoriti i popraviti što možemo.
+## Poznata ograničenja
+
+Stranica nije testirana sa svim kombinacijama čitača zaslona i preglednika. Ako naiđete na prepreku, javite nam.
+
+## Povratne informacije i kontakt
+
+Ako je neki dio ove stranice teško koristiti ili vam je sadržaj potreban u drugom obliku, pišite na [info@trislab.com](mailto:info@trislab.com). Navedite stranicu i opišite problem. Odgovorit ćemo vam i, gdje je moguće, ukloniti prepreku.

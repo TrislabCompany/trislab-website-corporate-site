@@ -52,7 +52,7 @@ The build holds nothing that differs between Environments. Each deploy writes `/
 | `src/layouts/BaseLayout.astro` | The head, header and footer every page shares, and the global styles |
 | `src/components/` | Reusable parts of pages |
 | `src/content/articles/<language>/` | Markdown articles, described in `src/content.config.ts` |
-| `src/content/legal/<language>/` | The privacy policy and the accessibility statement |
+| `src/content/legal/<language>/` | The privacy policy, the accessibility statement and the sustainability page |
 | `src/i18n/` | The interface strings per language, and the helpers for language URLs |
 | `src/lib/config.ts` | The one place that reads `/config.json` |
 | `public/` | Files copied as they are: the favicon and `_headers` |

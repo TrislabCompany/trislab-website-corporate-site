@@ -55,7 +55,7 @@ const site: SiteSettings<Lang> = {
     mapUrl: "https://www.google.com/maps/search/?api=1&query=Ankaranska+cesta+7b+6000+Koper+Slovenija",
   },
 
-  legalPages: { imprint: true, privacy: true, accessibility: true },
+  legalPages: { imprint: true, privacy: true, accessibility: true, sustainability: true },
 
   // Customers don't visit the office, so Organization rather than LocalBusiness.
   structuredData: "Organization",

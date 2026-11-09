@@ -10,10 +10,13 @@
 // 2. dist/_headers: X-Robots-Tag: noindex, nofollow on every path, unless
 //    the setting ROBOTS_INDEX is "true". Only production sets it, once the site
 //    is public at its own address; then only the *.pages.dev address is noindex.
+// 3. In production only: the environment badge is taken out of every page, its
+//    element and its script, so production pages load no JavaScript at all
+//    and don't fetch /config.json (src/components/EnvironmentBadge.astro).
 //
 // Usage: node scripts/write-config.mjs [dist folder]
 
-import { readFile, writeFile } from "node:fs/promises";
+import { readdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -51,6 +54,32 @@ export function withRobots(headers, index) {
   return lines.join("\n");
 }
 
+const BADGE_ELEMENT = /<span\b[^>]*\bdata-environment\b[^>]*><\/span>/g;
+const BADGE_SCRIPT = /<script\b[^>]*\bsrc="\/_astro\/EnvironmentBadge[^"]*"[^>]*><\/script>/g;
+
+/** True for the Environment whose visitors never see the badge. */
+export function isProduction(environment) {
+  return environment === "production" || environment === "prod";
+}
+
+/**
+ * A page without the environment badge: its element and its script. Fails when
+ * a trace of the badge is left, so a change to the component can't quietly
+ * bring the script back to production.
+ */
+export function withoutBadge(html) {
+  const out = html.replace(BADGE_SCRIPT, "").replace(BADGE_ELEMENT, "");
+  if (/data-environment|EnvironmentBadge/.test(out)) {
+    throw new Error("the environment badge is still in a page: update the patterns in scripts/write-config.mjs");
+  }
+  return out;
+}
+
+async function htmlFiles(dir) {
+  const entries = await readdir(dir, { withFileTypes: true, recursive: true });
+  return entries.filter((entry) => entry.isFile() && entry.name.endsWith(".html")).map((entry) => join(entry.parentPath, entry.name));
+}
+
 export function parseVars(json) {
   if (!json) return {};
   const vars = JSON.parse(json);
@@ -70,6 +99,13 @@ async function main() {
   const headersFile = join(dist, "_headers");
   const headers = await readFile(headersFile, "utf8").catch(() => "");
   await writeFile(headersFile, withRobots(headers, index));
+
+  const environment = vars.PLATFORM_ENVIRONMENT ?? process.env.PLATFORM_ENVIRONMENT;
+  if (isProduction(environment)) {
+    const pages = await htmlFiles(dist);
+    for (const page of pages) await writeFile(page, withoutBadge(await readFile(page, "utf8")));
+    console.log(`environment badge: taken out of ${pages.length} pages`);
+  }
 
   console.log(`wrote ${join(dist, "config.json")}: ${Object.keys(settings).join(", ") || "(empty)"}`);
   console.log(`search engines: ${index ? "may index the site's own address" : "noindex everywhere"}`);

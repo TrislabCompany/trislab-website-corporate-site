@@ -68,6 +68,8 @@ const sl: UiStrings = {
   "legal.imprint": "Impresum",
   "legal.privacy": "Politika zasebnosti",
   "legal.accessibility": "Izjava o dostopnosti",
+  "legal.sustainability": "Trajnostni razvoj",
+  "legal.sitemap": "Zemljevid strani",
   "imprint.company": "Podjetje",
   "imprint.address": "Naslov",
   "imprint.registrationNumber": "Matična številka",

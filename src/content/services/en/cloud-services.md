@@ -6,4 +6,4 @@ order: 2
 tags: ["Cloud architecture", "Migration", "Scalability"]
 ---
 
-We plan, migrate and optimise cloud environments that are secure and grow with your business. Our own systems run on our own cloud platform in the EU.
+We plan, migrate and optimise cloud environments that are secure and grow with your business. We run our own systems on Microsoft Azure and Google Cloud, in data centres in the EU.
