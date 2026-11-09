@@ -26,7 +26,13 @@ Open <http://localhost:4321>. The page reloads when you save a file. The dev ser
 pnpm test
 ```
 
-`pnpm test` runs `astro check`, which type-checks the pages and the content, the linter (`pnpm lint`), then the unit tests of the scripts (`pnpm test:unit`), `astro build` and the checks on the built site: the page-weight budget and `security.txt` ([site-settings.md](site-settings.md)). `ci / ci` runs the same command: `pnpm install --frozen-lockfile && pnpm test`.
+`pnpm test` runs `astro check`, which type-checks the pages and the content, the linter (`pnpm lint`), then the unit tests of the scripts (`pnpm test:unit`), `astro build` and the checks on the built site: the page-weight budget and `security.txt` ([site-settings.md](site-settings.md)). Then run the accessibility check on the built site (you need Chrome; see [quality-checks.md](quality-checks.md)):
+
+```sh
+pnpm test:a11y
+```
+
+`ci / ci` runs `pnpm install --frozen-lockfile`, `pnpm test` and `pnpm test:a11y`, then Lighthouse CI, which runs on GitHub only.
 
 ## 4. Build the static files
 

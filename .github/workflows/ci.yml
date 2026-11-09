@@ -1,7 +1,7 @@
 name: ci
 
-# The check every PR needs before it can merge: `pnpm test`, on every PR and
-# every push to main. Deploys nothing. The steps are in checks.yml, so the
+# The check every PR needs before it can merge: `pnpm test`, accessibility
+# (pa11y-ci) and Lighthouse CI, on every commit of a PR and every push to main. Deploys nothing. The steps are in checks.yml, so the
 # check keeps the name `ci / ci` that the ruleset of main requires.
 
 on:

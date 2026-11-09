@@ -9,3 +9,5 @@ dist/
 .idea/
 page-weight-report.json
 .wrangler/
+.quality/
+.lighthouseci/
