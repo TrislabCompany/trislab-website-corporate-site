@@ -50,9 +50,9 @@ English (default), Slovenian, Croatian, Serbian and Italian. Every language has 
 
 - **Main address:** trislab.com. www.trislab.com redirects to it permanently (`redirects`, at the Cloudflare edge). trislab.si is not registered and gets no redirect.
 - **The current site** has no sub-pages to keep, so no page redirects.
-- **Environments:** `dev` (stamp `corporate-site-dev` in `products-sandbox-neu`, region `northeurope`), which replaces the current `staging` stamp; every merge to `main` deploys to it. No test, staging or demo environment. Production in `products-prod-neu` comes later, once the content is approved, with trislab.com and www.trislab.com as custom hostnames; how a version is promoted to it without a release-tier environment is still open with the platform team.
+- **Environments:** `dev`, `staging` and `production` on Cloudflare Pages (project `trislab-website-corporate-site`), at dev-, staging- and prod-corporate-site.trislab.com; every merge to `main` deploys to dev, every release to staging, and a reviewed promotion to production ([deployment.md](deployment.md)). Production later moves to trislab.com and www.trislab.com, once the content is approved; prod-corporate-site.trislab.com then redirects there.
 - **Edge (Cloudflare):** trislab.com is a Trislab zone; its mail and other records stay. WAF rules before the first public production hostname, Cloudflare Free plan features only (`edge-waf`); default cache rules (`caching`).
-- **Release:** pull request with a green `ci / ci`, merged to `main`, which deploys to `dev`; production later, when the content is approved by Trislab's release approver (`deployment-pipeline`). The steps are in the template's `docs/deployment.md`.
+- **Release:** pull request with a green `ci / ci`, merged to `main`, which deploys to dev; *Release new version* tags it and deploys it to staging; *Promote to production* after Trislab's release approver accepts it on staging (`deployment-pipeline`).
 
 ## Integrations and outside services
 

@@ -4,7 +4,7 @@ Trislab's corporate site, trislab.com, built from `tl-template-website`. Read th
 
 ## What it is
 
-An [Astro](https://astro.build) site built into static files, served by an unprivileged nginx image on port 8080. It presents what Trislab offers and lets visitors contact sales by e-mail. It has no forms, no analytics, no cookies and loads no outside service.
+An [Astro](https://astro.build) site built into static files, served by Cloudflare Pages. It presents what Trislab offers and lets visitors contact sales by e-mail. It has no forms, no analytics, no cookies and loads no outside service.
 
 | Page | Address | Content from |
 | --- | --- | --- |
@@ -26,7 +26,9 @@ An [Astro](https://astro.build) site built into static files, served by an unpri
 - Add the Netwrix logo to the partners page once the file is received.
 - Have a native speaker review the Slovenian, Croatian, Serbian and Italian texts.
 
-The rest of this README is the template's guide, which still applies.
+**Hosting:** the pilot of website products on Cloudflare Pages, ahead of the template ([docs/upgrading/README.md](docs/upgrading/README.md)). dev, staging and production, and how a change moves between them, are in [docs/deployment.md](docs/deployment.md).
+
+The rest of this README is the template's guide, adapted to Cloudflare Pages.
 
 ## When to use it
 
@@ -55,25 +57,23 @@ What works on the first deploy, with no change:
 - The company as structured data (JSON-LD, `Organization` or `LocalBusiness`) on every page.
 - `/.well-known/security.txt`, with its expiry date checked in `ci`.
 - A page-weight budget: `ci` fails when a page or its JavaScript is over the limit.
-- `/healthz` and `/readyz`, which the platform uses to know the app is alive and ready.
-- `/config.json`, written at container start from the `PLATFORM_*` and `PUBLIC_*` settings, so one image runs in every Environment.
+- `/config.json`, written at deploy from the `PLATFORM_*` and `PUBLIC_*` settings, so one build runs in every Environment.
 - Security headers on every answer, including a strict Content-Security-Policy, and long caching of hashed assets.
-- The check `ci / ci` on every PR and every push to `main`: it builds the image, runs `astro check`, the linter, the page-weight and `security.txt` checks, scans the image with Trivy, and checks `platform.yaml`.
-- An image that runs as a non-root user and listens only on port 8080, with every base image pinned by digest.
+- The check `ci / ci` on every PR and every push to `main`: `astro check`, the linter, the unit tests, the build, and the page-weight and `security.txt` checks.
+- Deploy to dev on every merge, a release workflow that tags and builds a version, and deploys to staging and production of exactly that build.
 
 ## Technologies
 
 | Technology | Version |
 | --- | --- |
 | Astro | 5.18.2 |
-| Node.js | 22.23.4 (`node:22.23.4-alpine`, build stage only) |
+| Node.js | 22 (build only) |
 | pnpm | 10.34.9 |
 | TypeScript | 5.9.3 |
 | ESLint | 10.13.0, with `typescript-eslint` 8.72.1 and `eslint-plugin-astro` 3.2.1 |
-| nginx | 1.30.6 (`nginxinc/nginx-unprivileged:1.30.6-alpine`) |
-| Trivy | 0.74.0, in `ci / ci` |
+| Wrangler | 4.152.0, to deploy to Cloudflare Pages and to serve `dist/` locally |
 
-Both base images are pinned by digest in `Dockerfile`. Renovate will keep the versions current; until it runs, the platform team bumps them.
+Renovate will keep the versions current; until it runs, the platform team bumps them.
 
 ## Repository layout
 
@@ -81,24 +81,22 @@ Both base images are pinned by digest in `Dockerfile`. Renovate will keep the ve
 | --- | --- |
 | `src/site.config.ts` | The site's facts: languages, company, contact, legal pages, structured data, `security.txt` |
 | `src/` | The site: `pages/[...lang]/`, `layouts/`, `components/`, `content/<collection>/<language>/`, `i18n/` and `lib/` |
-| `public/` | Files copied as they are: the favicon |
-| `scripts/`, `page-weight.config.json` | The checks `pnpm test` runs on the built site, and the page-weight limits |
-| `Dockerfile`, `nginx/`, `docker-entrypoint.d/` | The image: the build, nginx's configuration, and the script that writes `/config.json` |
-| `platform.yaml` | The image and the sizing of the app, within the stamp's caps |
-| `.github/` | The `ci` workflow, the PR template and the code owners |
+| `public/` | Files copied as they are: the favicon and `_headers`, the security headers and caching |
+| `scripts/`, `page-weight.config.json` | The checks `pnpm test` runs on the built site, the page-weight limits, and the scripts the workflows use: `write-config.mjs`, `version.mjs`, `status.mjs` |
+| `.github/` | The workflows (ci, deploy, release, promote), the PR template and the code owners |
 | `docs/` | The detail behind this README |
 
 ## First steps
 
 1. **Set the site's facts:** languages, company, contact and legal pages in `src/site.config.ts` ([site-settings.md](docs/site-settings.md)).
-2. **Run it locally:** `pnpm install`, then `pnpm dev`, and open <http://localhost:4321>. Run `pnpm test` before you push. [getting-started.md](docs/getting-started.md) also runs it as the image.
+2. **Run it locally:** `pnpm install`, then `pnpm dev`, and open <http://localhost:4321>. Run `pnpm test` before you push. [getting-started.md](docs/getting-started.md) also runs it as Cloudflare Pages serves it.
 3. **Open your first PR:** change a page in `src/pages/[...lang]/`, push a branch and open a PR. `ci / ci` must pass and a code owner must approve.
-4. **Deploy, release and promote:** a merge to `main` deploys to `dev`, a tag `vX.Y.Z` releases to the `release` tier, and a promotion moves a release to production. `deploy.yml` and `release.yml` do the first two, and the platform adds `promote.yml` before the first production Environment; [deployment.md](docs/deployment.md) explains how they work.
+4. **Deploy, release and promote:** a merge to `main` deploys to dev, *Release new version* tags a version and deploys it to staging, and *Promote to production* moves it to production after a reviewer approves. `pnpm status` shows what runs where; [deployment.md](docs/deployment.md) explains how it works.
 
 ## More
 
-- [Getting started](docs/getting-started.md): run the site with the dev server and as the image, and run the tests.
-- [Architecture](docs/architecture.md): the image, the app, nginx and the request path.
+- [Getting started](docs/getting-started.md): run the site with the dev server and as Cloudflare Pages serves it, and run the tests.
+- [Architecture](docs/architecture.md): the build, Cloudflare Pages, the headers and the request path.
 - [Site settings](docs/site-settings.md): languages, contact and legal pages, structured data, `security.txt` and the page-weight budget.
 - [Configuration](docs/configuration.md): the settings, `/config.json`, and how to add a `PUBLIC_` setting.
-- [Deployment](docs/deployment.md): Environments, deploy, release and promote, `platform.yaml` and the caps, and how to ask for more.
+- [Deployment](docs/deployment.md): Environments, deploy, release and promote, rollback, and how the site is set up and torn down.
