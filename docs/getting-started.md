@@ -1,6 +1,6 @@
 # Getting started
 
-This guide runs the site on your machine, first with the Astro dev server and then as the same image the platform deploys, and runs the tests that `ci / ci` runs on every PR.
+This guide runs the site on your machine, first with the Astro dev server and then the way Cloudflare Pages serves it, and runs the tests that `ci / ci` runs on every PR.
 
 ## 1. What you need
 
@@ -8,7 +8,6 @@ This guide runs the site on your machine, first with the Astro dev server and th
 | --- | --- | --- |
 | Node.js | 22 | `node --version` |
 | pnpm | The version in `packageManager` of `package.json` | `pnpm --version` |
-| Docker | Any recent version, for the image | `docker version` |
 
 pnpm comes with Node through Corepack. Run `corepack enable` once, and pnpm then uses the version `package.json` names.
 
@@ -38,26 +37,28 @@ pnpm preview
 
 `pnpm build` writes the site to `dist/`. `pnpm preview` serves `dist/` at <http://localhost:4321>.
 
-## 5. Run the site as the image
+## 5. Run the site as Cloudflare Pages serves it
 
-This is the image the platform builds and deploys, with nginx in front of the files.
+`wrangler pages dev` serves `dist/` with the same routing and `_headers` as Cloudflare Pages. First write the settings of an Environment into the build, as a deploy does:
 
 ```sh
-docker build -t website-web:local .
-docker run --rm -p 8080:8080 -e PLATFORM_ENVIRONMENT=local -e PUBLIC_GREETING=hello website-web:local
+pnpm build
+PLATFORM_ENVIRONMENT=local PUBLIC_GREETING=hello node scripts/write-config.mjs dist
+pnpm exec wrangler pages dev dist --port 8788
 ```
 
 Then check it:
 
 | Request | Answer |
 | --- | --- |
-| <http://localhost:8080/> | The home page |
-| <http://localhost:8080/about> | The about page |
-| <http://localhost:8080/no-such-page> | The site's 404 page, with status 404 |
-| <http://localhost:8080/healthz> and <http://localhost:8080/readyz> | `ok`, with status 200 |
-| <http://localhost:8080/config.json> | `{"PLATFORM_ENVIRONMENT":"local","PUBLIC_GREETING":"hello"}` |
+| <http://localhost:8788/> | Leads to the default language, `/en` |
+| <http://localhost:8788/en/about> | The about page |
+| <http://localhost:8788/en/about/> | A redirect (308) to `/en/about` |
+| <http://localhost:8788/no-such-page> | The site's 404 page, with status 404 |
+| <http://localhost:8788/config.json> | `{"PLATFORM_ENVIRONMENT":"local","PUBLIC_GREETING":"hello"}` |
+| `curl -I http://localhost:8788/en` | The headers of `public/_headers`, and `X-Robots-Tag: noindex, nofollow` |
 
-Stop the container with Ctrl+C.
+Stop it with Ctrl+C. Run `pnpm build` again before you use `dist/` for anything else: `write-config.mjs` changed it.
 
 ## 6. Your first PR
 

@@ -1,10 +1,8 @@
 name: ci
 
-# Builds the image in platform.yaml, runs the tests, scans the image with Trivy
-# and checks platform.yaml, on every PR and every push to main. Pushes nothing.
-# All steps live in the reusable workflow in tl-platform, pinned by tag; the
-# job is named ci like the one it calls, so the required check is `ci / ci`.
-# Change only the test command here.
+# The check every PR needs before it can merge: `pnpm test`, on every PR and
+# every push to main. Deploys nothing. The steps are in checks.yml, so the
+# check keeps the name `ci / ci` that the ruleset of main requires.
 
 on:
   pull_request:
@@ -13,10 +11,12 @@ on:
 
 permissions: {}
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   ci:
     permissions:
       contents: read
-    uses: TrislabCompany/tl-platform/.github/workflows/app-ci.yml@app-workflows/v0.3.0-rc.1
-    with:
-      test-command: pnpm install --frozen-lockfile && pnpm test
+    uses: ./.github/workflows/checks.yml

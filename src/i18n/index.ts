@@ -2,8 +2,9 @@
 // language from here, never from a hard-coded "en".
 //
 // URLs: with two or more languages every page lives under its language
-// (/en/, /sl/about), and "/" leads to the default language. With one
-// language there is no prefix (/, /about).
+// (/en, /sl/about), and "/" leads to the default language. With one
+// language there is no prefix (/, /about). No address ends in a slash except
+// "/" (astro.config.mjs).
 
 import site, { languages, type Lang } from "../site.config";
 import en, { type UiKey, type UiStrings } from "./ui/en";
@@ -30,17 +31,22 @@ export function isLang(value: string | undefined): value is Lang {
   return (languages as readonly string[]).includes(value ?? "");
 }
 
-/** "/" or "/about" in the given language: "/sl/" or "/sl/about". */
+/** "/" or "/about" in the given language: "/sl" or "/sl/about". */
 export function localizedPath(lang: Lang, path = "/"): string {
   const clean = path.startsWith("/") ? path : `/${path}`;
   if (!prefixed) return clean;
-  return clean === "/" ? `/${lang}/` : `/${lang}${clean}`;
+  return clean === "/" ? `/${lang}` : `/${lang}${clean}`;
 }
 
-/** The same page without its language prefix: "/sl/about" gives "/about". */
+/**
+ * The same page without its language prefix: "/sl/about" gives "/about".
+ * At build time a page's path ends in ".html" ("/sl/about.html", "/sl.html":
+ * build.format "file"), which is dropped.
+ */
 export function unlocalizedPath(pathname: string): string {
-  const [, first, ...rest] = pathname.split("/");
-  const path = prefixed && isLang(first) ? `/${rest.join("/")}` : pathname;
+  const [, first, ...rest] = pathname.replace(/\.html$/, "").split("/");
+  const clean = `/${[first, ...rest].join("/")}`;
+  const path = prefixed && isLang(first) ? `/${rest.join("/")}` : clean;
   return path.replace(/\/+$/, "") || "/";
 }
 

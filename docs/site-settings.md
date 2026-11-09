@@ -16,7 +16,7 @@ defaultLanguage: "en",
 
 | Languages | URLs |
 | --- | --- |
-| Two or more | Every page lives under its language: `/en/`, `/sl/about`. `/` leads to the default language |
+| Two or more | Every page lives under its language: `/en`, `/sl/about`. `/` leads to the default language |
 | One | No prefix: `/`, `/about`. No language switch and no `hreflang` |
 
 Every page has a canonical link, an `hreflang` link for each language it exists in, and an `x-default` link to the default language. The header has a language switch made of plain links, with no JavaScript. The sitemap (`/sitemap-index.xml`) lists every page in every language, with the other languages as alternates, and `/robots.txt` names it.
