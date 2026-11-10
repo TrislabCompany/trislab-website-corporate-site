@@ -7,12 +7,13 @@
 //    reads it in src/lib/config.ts. Settings come from the environment of the
 //    process, and from the JSON object in VARS_JSON: the workflows pass the
 //    GitHub Environment's variables as VARS_JSON: ${{ toJSON(vars) }}.
-// 2. dist/_headers: X-Robots-Tag: noindex, nofollow on every path, unless
-//    the setting ROBOTS_INDEX is "true". Only production sets it, once the site
-//    is public at its own address; then only the *.pages.dev address is noindex.
-// 3. In production only: the environment badge is taken out of every page, its
+// 2. In production only: the environment badge is taken out of every page, its
 //    element and its script, so production pages load no JavaScript at all
 //    and don't fetch /config.json (src/components/EnvironmentBadge.astro).
+//
+// robots.txt, the sitemap and the headers are the same in every Environment.
+// dev and staging are kept from the public by Cloudflare Access, which the
+// infrastructure enforces (docs/deployment.md#environments).
 //
 // Usage: node scripts/write-config.mjs [dist folder]
 
@@ -33,33 +34,12 @@ export function publicSettings(...sources) {
   return Object.fromEntries(Object.entries(settings).sort(([a], [b]) => a.localeCompare(b)));
 }
 
-const ROBOTS = "  X-Robots-Tag: noindex, nofollow";
-
-/**
- * _headers with the robots header added. Cloudflare Pages keeps only the last
- * rule of a path, so the header goes into the rule /* that is already there,
- * not into a second one. When the site may be indexed, only the *.pages.dev
- * address gets it, in a rule of its own.
- */
-export function withRobots(headers, index) {
-  const text = headers.replace(/\r\n/g, "\n");
-  const ending = text.replace(/\n*$/, "\n");
-  if (index) {
-    return `${ending}\n# Added at deploy by scripts/write-config.mjs.\nhttps://:project.pages.dev/*\n${ROBOTS}\n`;
-  }
-  const lines = text.split("\n");
-  const all = lines.indexOf("/*");
-  if (all < 0) return `${text ? `${ending}\n` : ""}/*\n${ROBOTS}\n`;
-  lines.splice(all + 1, 0, ROBOTS);
-  return lines.join("\n");
-}
-
 const BADGE_ELEMENT = /<span\b[^>]*\bdata-environment\b[^>]*><\/span>/g;
 const BADGE_SCRIPT = /<script\b[^>]*\bsrc="\/_astro\/EnvironmentBadge[^"]*"[^>]*><\/script>/g;
 
-/** True for the Environment whose visitors never see the badge. */
+/** True only for the Environment named production. */
 export function isProduction(environment) {
-  return environment === "production" || environment === "prod";
+  return environment === "production";
 }
 
 /**
@@ -89,28 +69,36 @@ export function parseVars(json) {
   return vars;
 }
 
+/**
+ * Prepares `dist` for an Environment and returns what it did. `env` is the
+ * environment of the process; `vars` are the variables of the GitHub
+ * Environment. The Environment's name comes from `env` only, so a variable
+ * cannot make a deploy look like production (the badge) or the reverse.
+ */
+export async function prepare(dist, { vars = {}, env = {} } = {}) {
+  const settings = publicSettings(vars, env);
+  const environment = env.PLATFORM_ENVIRONMENT;
+  if (environment !== undefined) settings.PLATFORM_ENVIRONMENT = environment;
+  else delete settings.PLATFORM_ENVIRONMENT;
+
+  await writeFile(join(dist, "config.json"), `${JSON.stringify(settings)}
+`);
+
+  const pages = await htmlFiles(dist);
+  if (isProduction(environment)) {
+    for (const page of pages) await writeFile(page, withoutBadge(await readFile(page, "utf8")));
+  }
+  return { settings, environment, pages: pages.length, badgeRemoved: isProduction(environment) };
+}
+
 async function main() {
   const dist = process.argv[2] ?? "dist";
   const vars = parseVars(process.env.VARS_JSON);
-  const settings = publicSettings(vars, process.env);
-  const index = (vars.ROBOTS_INDEX ?? process.env.ROBOTS_INDEX) === "true";
-
-  await writeFile(join(dist, "config.json"), `${JSON.stringify(settings)}\n`);
-  const headersFile = join(dist, "_headers");
-  const headers = await readFile(headersFile, "utf8").catch(() => "");
-  await writeFile(headersFile, withRobots(headers, index));
-
-  const environment = vars.PLATFORM_ENVIRONMENT ?? process.env.PLATFORM_ENVIRONMENT;
-  if (isProduction(environment)) {
-    const pages = await htmlFiles(dist);
-    for (const page of pages) await writeFile(page, withoutBadge(await readFile(page, "utf8")));
-    console.log(`environment badge: taken out of ${pages.length} pages`);
-  }
-
-  console.log(`wrote ${join(dist, "config.json")}: ${Object.keys(settings).join(", ") || "(empty)"}`);
-  console.log(`search engines: ${index ? "may index the site's own address" : "noindex everywhere"}`);
+  const result = await prepare(dist, { vars, env: process.env });
+  if (result.badgeRemoved) console.log(`environment badge: taken out of ${result.pages} pages`);
+  console.log(`wrote ${join(dist, "config.json")}: ${Object.keys(result.settings).join(", ") || "(empty)"}`);
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   await main();
 }

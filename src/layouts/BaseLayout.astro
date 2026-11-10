@@ -2,10 +2,11 @@
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
 import StructuredData from "../components/StructuredData.astro";
-import { defaultLanguage, languages, localizedPath, t, unlocalizedPath, type Lang } from "../i18n";
+import { defaultLanguage, languages, localizedPath, ogLocale, t, unlocalizedPath, type Lang } from "../i18n";
 import site from "../site.config";
+import "../styles/tokens.css";
 import "../styles/global.css";
-// The Latin subset of Inter, loaded early so text is drawn once, in Inter.
+// The Latin subset of the font in src/styles/tokens.css, loaded early so text is drawn once, in it.
 import interLatin from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
 
 interface Props {
@@ -25,8 +26,6 @@ const path = unlocalizedPath(Astro.url.pathname);
 const absolute = (target: Lang) => new URL(localizedPath(target, path), site.url).toString();
 const alternates = available.length > 1 ? available : [];
 const fullTitle = title === site.name ? title : `${title} | ${site.name}`;
-// Open Graph locales: language_TERRITORY.
-const ogLocale: Record<Lang, string> = { en: "en_GB", sl: "sl_SI", hr: "hr_HR", sr: "sr_RS", it: "it_IT" };
 ---
 
 <!doctype html>
@@ -46,14 +45,14 @@ const ogLocale: Record<Lang, string> = { en: "en_GB", sl: "sl_SI", hr: "hr_HR", 
         <link rel="alternate" hreflang="x-default" href={absolute(defaultLanguage)} />
       )
     }
-    <meta name="theme-color" content="#0f172a" />
+    <meta name="theme-color" content={site.themeColor} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={absolute(lang)} />
-    <meta property="og:locale" content={ogLocale[lang]} />
-    {alternates.filter((other) => other !== lang).map((other) => <meta property="og:locale:alternate" content={ogLocale[other]} />)}
+    <meta property="og:locale" content={ogLocale(lang)} />
+    {alternates.filter((other) => other !== lang).map((other) => <meta property="og:locale:alternate" content={ogLocale(other)} />)}
     <meta name="twitter:card" content="summary" />
     <StructuredData />
   </head>

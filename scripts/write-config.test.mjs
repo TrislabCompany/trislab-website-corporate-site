@@ -7,7 +7,9 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
-import { isProduction, parseVars, publicSettings, withoutBadge, withRobots } from "./write-config.mjs";
+import { isProduction, parseVars, publicSettings, withoutBadge } from "./write-config.mjs";
+
+const script = fileURLToPath(new URL("write-config.mjs", import.meta.url));
 
 test("keeps only PLATFORM_* and PUBLIC_* settings, as strings", () => {
   const settings = publicSettings(
@@ -26,27 +28,6 @@ test("a later source wins", () => {
   assert.deepEqual(publicSettings({ PUBLIC_A: "1" }, { PUBLIC_A: "2" }), { PUBLIC_A: "2" });
 });
 
-const base = "/*\n  X-Frame-Options: DENY\n\n/_astro/*\n  Cache-Control: immutable\n";
-
-test("noindex goes into the rule /* that is there, never a second one", () => {
-  const headers = withRobots(base, false);
-  assert.equal(headers.match(/^\/\*$/gm).length, 1);
-  assert.match(headers, /^\/\*\n {2}X-Robots-Tag: noindex, nofollow\n {2}X-Frame-Options: DENY$/m);
-  assert.ok(headers.endsWith("/_astro/*\n  Cache-Control: immutable\n"));
-});
-
-test("noindex adds a rule /* when there is none", () => {
-  assert.equal(withRobots("", false), "/*\n  X-Robots-Tag: noindex, nofollow\n");
-  assert.equal(withRobots("/a\n  X: y", false), "/a\n  X: y\n\n/*\n  X-Robots-Tag: noindex, nofollow\n");
-});
-
-test("an indexable site is noindex only on its pages.dev address", () => {
-  const headers = withRobots(base, true);
-  assert.ok(headers.startsWith(base));
-  assert.match(headers, /^https:\/\/:project\.pages\.dev\/\*\n {2}X-Robots-Tag: noindex, nofollow$/m);
-  assert.equal(headers.match(/X-Robots-Tag/g).length, 1);
-});
-
 test("VARS_JSON must be an object", () => {
   assert.deepEqual(parseVars(undefined), {});
   assert.deepEqual(parseVars('{"PUBLIC_A":"1"}'), { PUBLIC_A: "1" });
@@ -54,26 +35,26 @@ test("VARS_JSON must be an object", () => {
   assert.throws(() => parseVars("null"), /object/);
 });
 
-test("writes config.json and adds noindex to _headers", () => {
+test("writes config.json and leaves _headers, robots.txt and the sitemap as built", () => {
   const dist = mkdtempSync(join(tmpdir(), "write-config-"));
-  writeFileSync(join(dist, "_headers"), "/*\n  X-Frame-Options: DENY\n");
-  execFileSync(process.execPath, [fileURLToPath(new URL("write-config.mjs", import.meta.url)), dist], {
-    env: { PLATFORM_ENVIRONMENT: "staging", SECRET: "s", VARS_JSON: '{"PUBLIC_A":"1","ROBOTS_INDEX":"false"}' },
+  const files = { _headers: "/*\n  X-Frame-Options: DENY\n", "robots.txt": "User-agent: *\nAllow: /\n", "sitemap-index.xml": "<sitemapindex/>" };
+  for (const [name, text] of Object.entries(files)) writeFileSync(join(dist, name), text);
+  execFileSync(process.execPath, [script, dist], {
+    env: { PLATFORM_ENVIRONMENT: "staging", SECRET: "s", VARS_JSON: '{"PUBLIC_A":"1","ROBOTS_INDEX":"true"}' },
   });
   assert.deepEqual(JSON.parse(readFileSync(join(dist, "config.json"), "utf8")), {
     PLATFORM_ENVIRONMENT: "staging",
     PUBLIC_A: "1",
   });
-  const headers = readFileSync(join(dist, "_headers"), "utf8");
-  assert.equal(headers, "/*\n  X-Robots-Tag: noindex, nofollow\n  X-Frame-Options: DENY\n");
+  for (const [name, text] of Object.entries(files)) assert.equal(readFileSync(join(dist, name), "utf8"), text, name);
 });
 
 const page =
   '<head><script type="module" src="/_astro/EnvironmentBadge.astro_astro_type_script_index_0_lang.C7SnS5CW.js"></script></head>' +
-  '<footer><span>© Trislab</span><span class="environment" data-environment hidden></span></footer>';
+  '<footer><span>© Example</span><span class="environment" data-environment hidden></span></footer>';
 
 test("production pages lose the badge's element and script", () => {
-  assert.equal(withoutBadge(page), "<head></head><footer><span>© Trislab</span></footer>");
+  assert.equal(withoutBadge(page), "<head></head><footer><span>© Example</span></footer>");
   assert.equal(withoutBadge("<p>no badge</p>"), "<p>no badge</p>");
 });
 
@@ -82,21 +63,29 @@ test("a badge the patterns miss fails the deploy", () => {
 });
 
 test("only production counts as production", () => {
-  assert.ok(isProduction("production") && isProduction("prod"));
-  assert.ok(!isProduction("staging") && !isProduction("dev") && !isProduction(undefined));
+  assert.ok(isProduction("production"));
+  assert.ok(!isProduction("Production") && !isProduction("staging") && !isProduction("dev") && !isProduction(undefined));
 });
 
-test("a production deploy takes the badge out of every page, and staging keeps it", () => {
-  for (const [environment, kept] of [["production", false], ["staging", true]]) {
+test("a production deploy takes the badge out of every page, and dev and staging keep it", () => {
+  for (const [environment, kept] of [["production", false], ["staging", true], ["dev", true]]) {
     const dist = mkdtempSync(join(tmpdir(), "write-config-"));
     mkdirSync(join(dist, "en"));
     writeFileSync(join(dist, "en.html"), page);
     writeFileSync(join(dist, "en", "about.html"), page);
-    execFileSync(process.execPath, [fileURLToPath(new URL("write-config.mjs", import.meta.url)), dist], {
-      env: { PLATFORM_ENVIRONMENT: environment },
-    });
+    execFileSync(process.execPath, [script, dist], { env: { PLATFORM_ENVIRONMENT: environment } });
     for (const file of [join(dist, "en.html"), join(dist, "en", "about.html")]) {
-      assert.equal(readFileSync(file, "utf8").includes("EnvironmentBadge"), kept);
+      assert.equal(readFileSync(file, "utf8").includes("EnvironmentBadge"), kept, environment);
     }
   }
+});
+
+test("a variable of the GitHub Environment cannot make a deploy production or change its name", () => {
+  const dist = mkdtempSync(join(tmpdir(), "write-config-"));
+  writeFileSync(join(dist, "en.html"), page);
+  execFileSync(process.execPath, [script, dist], {
+    env: { PLATFORM_ENVIRONMENT: "staging", VARS_JSON: '{"PLATFORM_ENVIRONMENT":"production"}' },
+  });
+  assert.ok(readFileSync(join(dist, "en.html"), "utf8").includes("EnvironmentBadge"));
+  assert.equal(JSON.parse(readFileSync(join(dist, "config.json"), "utf8")).PLATFORM_ENVIRONMENT, "staging");
 });

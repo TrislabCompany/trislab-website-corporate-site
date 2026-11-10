@@ -62,13 +62,13 @@ Then check it:
 | <http://localhost:8788/en/about/> | A redirect (308) to `/en/about` |
 | <http://localhost:8788/no-such-page> | The site's 404 page, with status 404 |
 | <http://localhost:8788/config.json> | `{"PLATFORM_ENVIRONMENT":"local","PUBLIC_GREETING":"hello"}` |
-| `curl -I http://localhost:8788/en` | The headers of `public/_headers`, and `X-Robots-Tag: noindex, nofollow` |
+| `curl -I http://localhost:8788/en` | The headers of `public/_headers` |
 
 Stop it with Ctrl+C. Run `pnpm build` again before you use `dist/` for anything else: `write-config.mjs` changed it.
 
 ## 6. Your first PR
 
-1. Create a branch, change a page in `src/pages/[...lang]/` or an article in `src/content/articles/<language>/`, and run `pnpm test`.
+1. Create a branch, change a page in `src/pages/[...lang]/` or an item in `src/content/services/<language>/`, and run `pnpm test`.
 2. Push the branch and open a PR. The PR template asks for screenshots of the pages you changed.
 3. `ci / ci` must pass, and a reviewer from the code owners must approve. Then squash-merge.
 

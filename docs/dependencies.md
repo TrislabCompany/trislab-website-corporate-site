@@ -6,7 +6,7 @@ Two tools keep the pins current and safe. Both work through PRs and GitHub's ema
 
 | Tool | When | What it does | Who is emailed |
 | --- | --- | --- | --- |
-| **Renovate** | Every Monday before 07:00 (Europe/Ljubljana) | Checks every dependency for a newer version. Opens a PR for each update or group of updates, and refreshes the lock file once a week. Keeps the **Dependency Dashboard** issue with everything pending | The code owners (`@TrislabCompany/corporate-site`), as reviewers of each PR |
+| **Renovate** | Every Monday before 07:00 (Europe/Ljubljana) | Checks every dependency for a newer version. Opens a PR for each update or group of updates, and refreshes the lock file once a week. Keeps the **Dependency Dashboard** issue with everything pending | The code owners (`@TrislabCompany/trislab-corporate-site`), as reviewers of each PR |
 | **Dependabot** alerts and security updates | As soon as an advisory is published | Raises an alert in the repository's Security tab, and opens a PR with the fixed version | Repository admins and everyone watching the repository's security alerts |
 
 Renovate is the weekly check: if a dependency needs an upgrade, a PR is waiting on Monday morning, and the team has an email about it. Dependabot is the fast path for security advisories, so Renovate doesn't open security PRs itself (`vulnerabilityAlerts` is off in `renovate.json`). That way nobody gets two PRs for the same fix.
@@ -26,7 +26,7 @@ For the emails to arrive, each person needs the right GitHub notification settin
 
 Renovate needs the **Mend Renovate** GitHub App installed for this repository by an organization owner. Without it, nothing runs. The first run opens a Dependency Dashboard issue.
 
-`renovate.json` is self-contained for now. Once `tl-platform` publishes `renovate/default.json` with this body, the file here goes back to `{"extends": ["github>TrislabCompany/tl-platform//renovate/default"]}` ([upgrading/README.md](upgrading/README.md)).
+`renovate.json` is owned by the platform and the same in every website repository: a template update replaces it ([upgrading/README.md](upgrading/README.md)). Ask the platform team for a change to the rules.
 
 ## Review an update PR
 

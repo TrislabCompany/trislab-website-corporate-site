@@ -3,12 +3,12 @@ import { test } from "node:test";
 import { findChrome, lighthouseConfig, lighthouseMarkdown, onlyPages, pa11yConfig, rebase, sitemapLocs } from "./quality.mjs";
 
 test("sitemapLocs reads every <loc>", () => {
-  const xml = `<urlset><url><loc>https://trislab.com/en</loc><xhtml:link href="https://trislab.com/sl"/></url><url><loc> https://trislab.com/en/about </loc></url></urlset>`;
-  assert.deepEqual(sitemapLocs(xml), ["https://trislab.com/en", "https://trislab.com/en/about"]);
+  const xml = `<urlset><url><loc>https://www.example.com/en</loc><xhtml:link href="https://www.example.com/sl"/></url><url><loc> https://www.example.com/en/about </loc></url></urlset>`;
+  assert.deepEqual(sitemapLocs(xml), ["https://www.example.com/en", "https://www.example.com/en/about"]);
 });
 
 test("rebase moves a URL to the local server and keeps the path", () => {
-  assert.equal(rebase("https://trislab.com/en/about?x=1", "http://127.0.0.1:8788/"), "http://127.0.0.1:8788/en/about?x=1");
+  assert.equal(rebase("https://www.example.com/en/about?x=1", "http://127.0.0.1:8788/"), "http://127.0.0.1:8788/en/about?x=1");
   assert.equal(rebase("/sl", "http://127.0.0.1:8788/"), "http://127.0.0.1:8788/sl");
 });
 

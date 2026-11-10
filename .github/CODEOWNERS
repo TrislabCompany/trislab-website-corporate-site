@@ -1,4 +1,4 @@
-* @TrislabCompany/corporate-site
-/.github/ @TrislabCompany/corporate-site @TrislabCompany/devops
-/public/_headers @TrislabCompany/corporate-site @TrislabCompany/devops
-/scripts/write-config.mjs @TrislabCompany/corporate-site @TrislabCompany/devops
+* @TrislabCompany/trislab-corporate-site
+/.github/ @TrislabCompany/trislab-corporate-site @TrislabCompany/devops
+/public/_headers @TrislabCompany/trislab-corporate-site @TrislabCompany/devops
+/scripts/write-config.mjs @TrislabCompany/trislab-corporate-site @TrislabCompany/devops

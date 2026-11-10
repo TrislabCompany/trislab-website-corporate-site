@@ -3,6 +3,9 @@
 // "search and AI answers, no AI training"). The sitemap is named with the
 // site's own address.
 //
+// It is the same in every Environment: dev and staging are protected by
+// Cloudflare Access, not by this file.
+//
 // robots.txt is a request, not a lock: well-behaved crawlers follow it.
 import type { APIRoute } from "astro";
 import site from "../site.config";
