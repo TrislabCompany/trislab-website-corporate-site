@@ -9,9 +9,11 @@
 //   - pa11y-ci (axe + HTML_CodeSniffer, WCAG 2 AA) on every URL of the sitemap, settings in .pa11yci.json
 //   - Lighthouse CI on the pages in lighthouserc.json, with the score and Core Web Vitals limits there
 // Reports go to .quality/. QUALITY_BASE_URL checks a running site instead of serving dist/.
+// QUALITY_PAGES (space-separated paths, from scripts/ci-scope.mjs) checks only those pages.
 
 import { spawn } from "node:child_process";
 import { appendFileSync, cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { isAbsolute } from "node:path";
 import { pathToFileURL } from "node:url";
 
 const OUT = ".quality";
@@ -27,6 +29,18 @@ export function sitemapLocs(xml) {
 export function rebase(url, base) {
   const u = new URL(url, base);
   return new URL(u.pathname + u.search + u.hash, base).href;
+}
+
+/** The pages to check, from QUALITY_PAGES (scripts/ci-scope.mjs); empty means every page. */
+const PAGES = (process.env.QUALITY_PAGES ?? "").split(/\s+/).filter(Boolean);
+
+const trimSlash = (path) => path.replace(/\/+$/, "") || "/";
+
+/** The URLs whose path is one of `pages` (trailing slashes don't count), or every URL when `pages` is empty. */
+export function onlyPages(urls, pages) {
+  if (pages.length === 0) return urls;
+  const want = new Set(pages.map(trimSlash));
+  return urls.filter((u) => want.has(trimSlash(new URL(u).pathname)));
 }
 
 /** pa11y-ci settings with the URLs to check. */
@@ -45,6 +59,49 @@ export function lighthouseConfig(rc, base, outDir) {
       upload: { target: "filesystem", outputDir: outDir, ...ci.upload },
     },
   };
+}
+
+const LIGHTHOUSE_CATEGORIES = [
+  ["performance", "Performance"],
+  ["accessibility", "Accessibility"],
+  ["best-practices", "Best practices"],
+  ["seo", "SEO"],
+];
+
+const seconds = (ms) => `${(ms / 1000).toFixed(1)} s`;
+const LIGHTHOUSE_METRICS = [
+  ["largest-contentful-paint", "LCP", seconds],
+  ["cumulative-layout-shift", "CLS", (v) => v.toFixed(2)],
+  ["total-blocking-time", "TBT", (ms) => `${Math.round(ms)} ms`],
+  ["first-contentful-paint", "FCP", seconds],
+];
+
+/**
+ * The Lighthouse results as a Markdown table: one row per page ({ url, scores, metrics }),
+ * each value marked against its limit in lighthouserc (✅ within, ❌ over).
+ */
+export function lighthouseMarkdown(runs, rc) {
+  const assertions = rc.ci?.assert?.assertions ?? {};
+  const limit = (id) => assertions[id]?.[1] ?? {};
+  const mark = (ok) => (ok === undefined ? "" : ok ? " ✅" : " ❌");
+  const cell = (value, text, ok) => (typeof value === "number" ? `${text(value)}${mark(ok(value))}` : "–");
+
+  const header = ["Page", ...LIGHTHOUSE_CATEGORIES.map(([, name]) => name), ...LIGHTHOUSE_METRICS.map(([, name]) => name)];
+  const rows = runs.map((r) => {
+    const scores = LIGHTHOUSE_CATEGORIES.map(([id]) => {
+      const min = limit(`categories:${id}`).minScore;
+      return cell(r.scores?.[id], (s) => Math.round(s * 100), (s) => (min === undefined ? undefined : s >= min));
+    });
+    const metrics = LIGHTHOUSE_METRICS.map(([id, , text]) => {
+      const max = limit(id).maxNumericValue;
+      return cell(r.metrics?.[id], text, (v) => (max === undefined ? undefined : v <= max));
+    });
+    return `| ${[new URL(r.url).pathname, ...scores, ...metrics].join(" | ")} |`;
+  });
+  return (
+    `| ${header.join(" | ")} |\n| ${header.map(() => "---").join(" | ")} |\n${rows.join("\n")}\n\n` +
+    "The median of the runs of each page, on a simulated mid-range phone. ✅ within the limit in `lighthouserc.json`, ❌ over it.\n"
+  );
 }
 
 /** A Chrome or Chromium on this machine, for Puppeteer (pa11y) and Lighthouse. */
@@ -122,12 +179,22 @@ function summary(markdown) {
   if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, markdown + "\n");
 }
 
-async function a11y(base, env) {
+/** Every page of dist/sitemap-*.xml, on the base URL. */
+function sitemapUrls(base) {
   const files = readdirSync("dist").filter((f) => /^sitemap-\d+\.xml$/.test(f));
-  const urls = [...new Set(files.flatMap((f) => sitemapLocs(readFileSync(`dist/${f}`, "utf8"))).map((u) => rebase(u, base)))];
-  if (urls.length === 0) {
+  return [...new Set(files.flatMap((f) => sitemapLocs(readFileSync(`dist/${f}`, "utf8"))).map((u) => rebase(u, base)))];
+}
+
+async function a11y(base, env) {
+  const all = sitemapUrls(base);
+  if (all.length === 0) {
     console.error("quality: no URLs in dist/sitemap-*.xml.");
     return 1;
+  }
+  const urls = onlyPages(all, PAGES);
+  if (urls.length === 0) {
+    console.log("\naccessibility: none of the pages in QUALITY_PAGES is in the sitemap, nothing to check.");
+    return 0;
   }
   const settings = JSON.parse(readFileSync(".pa11yci.json", "utf8"));
   writeFileSync(`${OUT}/pa11yci.json`, JSON.stringify(pa11yConfig(settings, urls), null, 2));
@@ -148,17 +215,33 @@ async function a11y(base, env) {
 
 async function lighthouse(base, env) {
   const rc = JSON.parse(readFileSync("lighthouserc.json", "utf8"));
+  if (PAGES.length) {
+    // Only the pages the PR changes (QUALITY_PAGES), instead of the list in lighthouserc.json.
+    const paths = onlyPages(sitemapUrls(base), PAGES).map((u) => new URL(u).pathname);
+    if (paths.length === 0) {
+      console.log("\nLighthouse: none of the pages in QUALITY_PAGES is in the sitemap, nothing to check.");
+      return 0;
+    }
+    rc.ci = { ...rc.ci, collect: { ...rc.ci?.collect, url: paths } };
+  }
   writeFileSync(`${OUT}/lighthouserc.json`, JSON.stringify(lighthouseConfig(rc, base, `${OUT}/lighthouse`), null, 2));
   console.log("\nLighthouse CI\n");
   const code = await run("pnpm", ["exec", "lhci", "autorun", `--config=${OUT}/lighthouserc.json`], env);
 
+  // The median run of each page, as a table for the job summary and, through
+  // .quality/lighthouse.md in the reports artifact, for the PR comment (ci.yml).
   const manifest = `${OUT}/lighthouse/manifest.json`;
   if (existsSync(manifest)) {
-    const pct = (n) => (typeof n === "number" ? Math.round(n * 100) : "–");
-    const rows = JSON.parse(readFileSync(manifest, "utf8"))
+    const runs = JSON.parse(readFileSync(manifest, "utf8"))
       .filter((r) => r.isRepresentativeRun)
-      .map((r) => `| ${new URL(r.url).pathname} | ${pct(r.summary.performance)} | ${pct(r.summary.accessibility)} | ${pct(r.summary["best-practices"])} | ${pct(r.summary.seo)} |`);
-    summary(`### Lighthouse (median of the runs)\n\n| Page | Performance | Accessibility | Best practices | SEO |\n| --- | --- | --- | --- | --- |\n${rows.join("\n")}\n`);
+      .map((r) => {
+        const lhr = JSON.parse(readFileSync(isAbsolute(r.jsonPath) ? r.jsonPath : `${OUT}/lighthouse/${r.jsonPath}`, "utf8"));
+        const metrics = Object.fromEntries(LIGHTHOUSE_METRICS.map(([id]) => [id, lhr.audits?.[id]?.numericValue]));
+        return { url: r.url, scores: r.summary, metrics };
+      });
+    const markdown = `### Lighthouse\n\n${lighthouseMarkdown(runs, rc)}`;
+    writeFileSync(`${OUT}/lighthouse.md`, markdown);
+    summary(markdown);
   }
   return code;
 }
