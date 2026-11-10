@@ -1,8 +1,9 @@
 name: checks
 
 # The steps of the check `ci / ci`, called by ci.yml: type check, lint, unit
-# tests, build, the checks on the built site, then accessibility (pa11y-ci)
-# and Lighthouse CI (docs/getting-started.md, docs/quality-checks.md).
+# tests, build, the checks on the built site (among them the browser check,
+# which needs Chromium), then accessibility (pa11y-ci) and Lighthouse CI
+# (docs/getting-started.md, docs/quality-checks.md).
 
 on:
   workflow_call:
@@ -21,6 +22,10 @@ jobs:
           persist-credentials: false
 
       - uses: ./.github/actions/setup
+
+      # The version that matches playwright in pnpm-lock.yaml, with the system
+      # libraries it needs.
+      - run: pnpm exec playwright install --with-deps chromium
 
       - id: test
         run: pnpm test

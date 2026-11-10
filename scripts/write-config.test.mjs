@@ -2,12 +2,12 @@
 
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
-import { parseVars, publicSettings, withRobots } from "./write-config.mjs";
+import { isProduction, parseVars, publicSettings, withoutBadge, withRobots } from "./write-config.mjs";
 
 test("keeps only PLATFORM_* and PUBLIC_* settings, as strings", () => {
   const settings = publicSettings(
@@ -66,4 +66,37 @@ test("writes config.json and adds noindex to _headers", () => {
   });
   const headers = readFileSync(join(dist, "_headers"), "utf8");
   assert.equal(headers, "/*\n  X-Robots-Tag: noindex, nofollow\n  X-Frame-Options: DENY\n");
+});
+
+const page =
+  '<head><script type="module" src="/_astro/EnvironmentBadge.astro_astro_type_script_index_0_lang.C7SnS5CW.js"></script></head>' +
+  '<footer><span>© Trislab</span><span class="environment" data-environment hidden></span></footer>';
+
+test("production pages lose the badge's element and script", () => {
+  assert.equal(withoutBadge(page), "<head></head><footer><span>© Trislab</span></footer>");
+  assert.equal(withoutBadge("<p>no badge</p>"), "<p>no badge</p>");
+});
+
+test("a badge the patterns miss fails the deploy", () => {
+  assert.throws(() => withoutBadge('<span data-environment class="x" hidden>x</span>'), /still in a page/);
+});
+
+test("only production counts as production", () => {
+  assert.ok(isProduction("production") && isProduction("prod"));
+  assert.ok(!isProduction("staging") && !isProduction("dev") && !isProduction(undefined));
+});
+
+test("a production deploy takes the badge out of every page, and staging keeps it", () => {
+  for (const [environment, kept] of [["production", false], ["staging", true]]) {
+    const dist = mkdtempSync(join(tmpdir(), "write-config-"));
+    mkdirSync(join(dist, "en"));
+    writeFileSync(join(dist, "en.html"), page);
+    writeFileSync(join(dist, "en", "about.html"), page);
+    execFileSync(process.execPath, [fileURLToPath(new URL("write-config.mjs", import.meta.url)), dist], {
+      env: { PLATFORM_ENVIRONMENT: environment },
+    });
+    for (const file of [join(dist, "en.html"), join(dist, "en", "about.html")]) {
+      assert.equal(readFileSync(file, "utf8").includes("EnvironmentBadge"), kept);
+    }
+  }
 });

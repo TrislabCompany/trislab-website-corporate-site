@@ -68,6 +68,8 @@ const en = {
   "legal.imprint": "Imprint",
   "legal.privacy": "Privacy policy",
   "legal.accessibility": "Accessibility statement",
+  "legal.sustainability": "Sustainability",
+  "legal.sitemap": "Sitemap",
   "imprint.company": "Company",
   "imprint.address": "Address",
   "imprint.registrationNumber": "Registration number",

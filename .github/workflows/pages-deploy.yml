@@ -10,7 +10,9 @@ name: pages-deploy
 #                   production get the same files.
 #
 # Only dist/config.json and the robots header differ between Environments
-# (scripts/write-config.mjs). The Environment holds the variable
+# (scripts/write-config.mjs). config.json carries PLATFORM_ENVIRONMENT and
+# PLATFORM_VERSION (the tag, or the commit for dev), which the environment badge
+# shows. The Environment holds the variable
 # CLOUDFLARE_ACCOUNT_ID, PAGES_PROJECT and SITE_URL, the secret
 # CLOUDFLARE_API_TOKEN, and any PUBLIC_* setting.
 #
@@ -99,6 +101,7 @@ jobs:
         run: node scripts/write-config.mjs dist
         env:
           PLATFORM_ENVIRONMENT: ${{ inputs.environment }}
+          PLATFORM_VERSION: ${{ inputs.version }}
           VARS_JSON: ${{ toJSON(vars) }}
 
       - name: Record the deployment

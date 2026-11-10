@@ -6,4 +6,4 @@ order: 2
 tags: ["Oblačna arhitektura", "Migracija", "Skalabilnost"]
 ---
 
-Planiramo, migriramo i optimiziramo oblačna okruženja koja su sigurna i rastu s vašim poslovanjem. Naši vlastiti sustavi rade na našoj vlastitoj oblačnoj platformi u EU.
+Planiramo, migriramo i optimiziramo oblačna okruženja koja su sigurna i rastu s vašim poslovanjem. Naši vlastiti sustavi rade na Microsoft Azureu i Google Cloudu, u podatkovnim centrima u EU.

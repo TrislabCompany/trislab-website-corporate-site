@@ -59,6 +59,7 @@ There is no form: the site has no backend. The map is a plain link, never embedd
 | Imprint | `/<lang>/imprint` | `company` in the settings: legal name, address, registration number, VAT ID, contact, and any `imprintNotes` |
 | Privacy policy | `/<lang>/privacy` | `src/content/legal/<lang>/privacy.md` |
 | Accessibility statement | `/<lang>/accessibility` | `src/content/legal/<lang>/accessibility.md` |
+| Sustainability (ESG) | `/<lang>/sustainability` | `src/content/legal/<lang>/sustainability.md` |
 
 Switch each page on or off in `legalPages`. The footer links to the pages that are on. A page that is on must have its text in every language, or the build fails and names the missing file. The sample texts are placeholders: replace them with the texts from Trislab's shared legal pack, filled in and reviewed.
 

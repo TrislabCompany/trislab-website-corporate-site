@@ -1,5 +1,7 @@
-// The yearly CO2 estimate of the site, for internal ESG figures. It is never
-// published on the site. Run it by hand once a year, after `pnpm test` has
+// The yearly CO2 estimate of the site, for internal ESG figures. The note
+// itself stays internal; the per-page-view figure and the average page weight
+// are published on the sustainability page (src/content/legal/<lang>/
+// sustainability.md), so update them there when they change. Run it by hand once a year, after `pnpm test` has
 // written page-weight-report.json:
 //
 //   pnpm co2 --visits 120000 --visits-source "Cloudflare traffic statistics"

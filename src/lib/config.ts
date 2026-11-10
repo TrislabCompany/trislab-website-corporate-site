@@ -8,6 +8,8 @@
 
 export interface SiteConfig {
   PLATFORM_ENVIRONMENT?: string;
+  /** What runs: the release tag (vX.Y.Z) on staging and production, the commit on dev. */
+  PLATFORM_VERSION?: string;
   PLATFORM_STAMP?: string;
   [name: `PLATFORM_${string}` | `PUBLIC_${string}`]: string | undefined;
 }

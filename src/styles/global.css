@@ -526,3 +526,24 @@ time {
 main:focus {
   outline: none;
 }
+
+/* Tables in Markdown content, such as the figures on the sustainability page. */
+main table {
+  width: 100%;
+  max-width: 46rem;
+  margin: 1.5rem 0;
+  border-collapse: collapse;
+}
+
+main th,
+main td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+
+main th {
+  color: var(--muted);
+  font-weight: 600;
+}

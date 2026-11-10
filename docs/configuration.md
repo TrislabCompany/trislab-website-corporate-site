@@ -8,7 +8,7 @@ The site's own facts, which are the same in every Environment (languages, compan
 
 | Kind | Examples | Set by |
 | --- | --- | --- |
-| Platform settings | `PLATFORM_ENVIRONMENT` (`dev`, `staging` or `production`) | The deploy workflow |
+| Platform settings | `PLATFORM_ENVIRONMENT` (`dev`, `staging` or `production`), `PLATFORM_VERSION` (the tag `vX.Y.Z`, or the commit on dev) | The deploy workflow |
 | Your public settings | `PUBLIC_CONTACT_EMAIL`, `PUBLIC_ANALYTICS_ID` | Variables of the GitHub Environment (section 3) |
 | Deploy settings, never in `/config.json` | `CLOUDFLARE_ACCOUNT_ID`, `PAGES_PROJECT`, `SITE_URL`, `ROBOTS_INDEX`, the secret `CLOUDFLARE_API_TOKEN` | The platform, in the GitHub Environment ([deployment.md](deployment.md#set-up-and-tear-down)) |
 
@@ -19,7 +19,7 @@ The site has no secrets and reads none. A setting that must stay secret doesn't 
 At deploy, `scripts/write-config.mjs` writes `dist/config.json` from every setting whose name starts with `PLATFORM_` or `PUBLIC_`, and from nothing else. `pages-deploy.yml` passes it all the variables of the GitHub Environment; any other variable never reaches the browser.
 
 ```json
-{"PLATFORM_ENVIRONMENT":"staging","PUBLIC_CONTACT_EMAIL":"hello@example.com"}
+{"PLATFORM_ENVIRONMENT":"staging","PLATFORM_VERSION":"v0.3.2","PUBLIC_CONTACT_EMAIL":"hello@example.com"}
 ```
 
 The same script adds `X-Robots-Tag: noindex, nofollow` to `_headers`, unless the Environment's variable `ROBOTS_INDEX` is `true`, which only production gets, once the site is public.
@@ -33,7 +33,7 @@ const config = await loadConfig();
 const email = config.PUBLIC_CONTACT_EMAIL ?? "info@example.com";
 ```
 
-`loadConfig()` fetches the file once per page. When the file is missing, as with `pnpm dev`, it returns an empty object, so give every value a default. `src/components/EnvironmentBadge.astro` is an example: it shows the Environment everywhere except production.
+`loadConfig()` fetches the file once per page. When the file is missing, as with `pnpm dev`, it returns an empty object, so give every value a default. `src/components/EnvironmentBadge.astro` is an example: it shows the Environment and the version everywhere except production. A production deploy takes the badge and its script out of every page, so production pages run no JavaScript; a new component that reads `/config.json` in production must change that step in `scripts/write-config.mjs`.
 
 Values in `/config.json` are read in the browser, after the page has loaded. Content that search engines must see belongs in the pages themselves, not in `/config.json`.
 

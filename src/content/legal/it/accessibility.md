@@ -1,33 +1,41 @@
 ---
 title: "Dichiarazione di accessibilità"
-description: "Quanto è accessibile trislab.com, come lo abbiamo verificato e come segnalarci un problema."
-updated: 2026-11-05
+description: "L'impegno di Trislab per l'accessibilità digitale, lo standard con cui è realizzato trislab.com e come segnalarci un problema."
 ---
 
-## Il nostro obiettivo
+## Il nostro impegno
 
-Trislab vuole che questo sito sia utilizzabile da tutti, anche da chi usa la tastiera invece del mouse, un lettore di schermo o un testo più grande. Il sito è realizzato per soddisfare le Linee guida per l'accessibilità dei contenuti web (WCAG) 2.1, livello AA.
+Trislab d.o.o. si impegna a rendere trislab.com accessibile al maggior numero possibile di persone, indipendentemente dalle loro capacità e dalla tecnologia che usano. Questo include chi naviga con la tastiera, usa un lettore di schermo o un'altra tecnologia assistiva, o ingrandisce il testo.
 
-## Stato
+## Standard applicato
 
-Secondo la nostra valutazione, trislab.com soddisfa le WCAG 2.1 di livello AA. Non conosciamo parti del sito che non le soddisfino.
+Il sito è progettato e realizzato secondo le Linee guida per l'accessibilità dei contenuti web (WCAG) 2.1, livello AA, pubblicate dal World Wide Web Consortium (W3C).
 
-## Come abbiamo verificato
+## Stato di conformità
 
-Abbiamo valutato il sito noi stessi il 5 novembre 2026:
+trislab.com mira alla conformità con le WCAG 2.1, livello AA. La conformità non è stata verificata da un revisore di accessibilità indipendente, quindi questa dichiarazione non attesta una conformità formale. I nostri test interni, descritti di seguito, non hanno rilevato barriere.
 
-- Un controllo automatico con axe-core di tutte le pagine, in tutte le lingue, su uno schermo ampio e sullo schermo di un telefono largo 320 pixel. Non ha trovato problemi.
-- Un controllo manuale: l'intero sito si può usare solo con la tastiera, con un focus visibile e un link "Vai al contenuto" all'inizio di ogni pagina. Le pagine funzionano anche con lo zoom al 200% o su uno schermo stretto, senza scorrimento orizzontale. Testo e link hanno un contrasto sufficiente rispetto allo sfondo.
+## Come verifichiamo
 
-Il sito non è ancora stato provato con tutti i lettori di schermo e non è stato verificato da un ente indipendente.
+I nostri test interni coprono tutte le pagine del sito, in tutte le lingue:
 
-## Cosa rende il sito più facile da usare
+- **Test automatici** con axe-core secondo le regole WCAG 2.1 di livello A e AA, su uno schermo desktop e su uno schermo mobile largo 320 pixel. I test vengono eseguiti automaticamente a ogni modifica del sito e una modifica che non li supera non viene pubblicata.
+- **Tastiera**: ogni funzione è raggiungibile e utilizzabile con la sola tastiera, il focus è sempre visibile e ogni pagina inizia con un collegamento "Vai al contenuto".
+- **Ingrandimento e adattamento**: il contenuto resta completo e utilizzabile con uno zoom al 200% e su schermi stretti, senza scorrimento orizzontale.
+- **Contrasto**: testo ed elementi interattivi rispettano i rapporti di contrasto delle WCAG.
+- **Struttura**: ogni pagina ha un titolo principale, titoli in ordine logico, punti di riferimento e la lingua dichiarata.
 
-- Ogni pagina ha un titolo principale, titoli in ordine e la lingua del testo indicata.
-- Tutte le informazioni sono date come testo. Il logo e le icone sono decorativi e nascosti ai lettori di schermo.
-- Il sito non usa cookie, non mostra finestre pop-up e non riproduce suoni o contenuti in movimento.
-- Le stesse pagine sono disponibili in inglese, sloveno, croato, serbo e italiano.
+## Caratteristiche di accessibilità
 
-## Segnalazioni
+- Tutte le informazioni sono disponibili come testo. Il logo e le icone sono decorativi e nascosti alle tecnologie assistive.
+- Il sito non imposta cookie, non mostra pop-up o banner e non contiene audio, video o contenuti in movimento.
+- Il sito non usa JavaScript, quindi tutti i contenuti e tutte le funzioni sono disponibili in qualsiasi browser.
+- Tutti i contenuti sono disponibili in inglese, sloveno, croato, serbo e italiano.
 
-Se qualcosa su questo sito è difficile da usare, o se vi serve il contenuto in un'altra forma, scrivete a [info@trislab.com](mailto:info@trislab.com). Indicate la pagina e il problema: vi risponderemo e correggeremo ciò che possiamo.
+## Limiti noti
+
+Il sito non è stato provato con tutte le combinazioni di lettori di schermo e browser. Se incontrate una barriera, segnalatecelo.
+
+## Segnalazioni e contatti
+
+Se una parte di questo sito è difficile da usare o vi serve il contenuto in un altro formato, scrivete a [info@trislab.com](mailto:info@trislab.com). Indicate la pagina e descrivete il problema. Vi risponderemo e, dove possibile, rimuoveremo la barriera.

@@ -14,7 +14,7 @@ An [Astro](https://astro.build) site built into static files, served by Cloudfla
 | Partners | `/<lang>/partners` | `src/i18n/ui/<lang>.ts`; only confirmed partners (Netwrix) |
 | About | `/<lang>/about` | `src/i18n/ui/<lang>.ts` |
 | Contact | `/<lang>/contact` | `src/site.config.ts` |
-| Imprint, privacy policy, accessibility statement | `/<lang>/imprint`, `/privacy`, `/accessibility` | `src/site.config.ts`, `src/content/legal/<lang>/` |
+| Imprint, privacy policy, accessibility statement, sustainability | `/<lang>/imprint`, `/privacy`, `/accessibility`, `/sustainability` | `src/site.config.ts`, `src/content/legal/<lang>/` |
 
 **Languages:** English (the default and the source), Slovenian, Croatian, Serbian (Latin script) and Italian, each under its own URL. The other languages are drafts from English and are reviewed by a native speaker before production.
 
@@ -22,7 +22,6 @@ An [Astro](https://astro.build) site built into static files, served by Cloudfla
 
 **Before production:**
 
-- Replace the draft legal texts in `src/content/legal/` with the texts from Trislab's shared legal pack, reviewed by a lawyer. Each file says so at the top.
 - Add the Netwrix logo to the partners page once the file is received.
 - Have a native speaker review the Slovenian, Croatian, Serbian and Italian texts.
 
@@ -52,8 +51,8 @@ What works on the first deploy, with no change:
 
 - The sample site, ready to replace with your own pages and content.
 - Several languages, each under its own URL (`/en/`, `/sl/`), with `hreflang`, `x-default`, a canonical link and a language switch on every page. A one-language site has no prefix.
-- A contact page, an imprint, a privacy policy and an accessibility statement, filled from `src/site.config.ts` and Markdown, and linked from the footer.
-- A sitemap of every page in every language, and a `robots.txt` that names it.
+- A contact page, an imprint, a privacy policy, an accessibility statement and a sustainability page, filled from `src/site.config.ts` and Markdown, and linked from the footer.
+- A sitemap of every page in every language, and a `robots.txt` that names it, plus a sitemap page for visitors at `/<lang>/sitemap`, linked from the footer.
 - The company as structured data (JSON-LD, `Organization` or `LocalBusiness`) on every page.
 - `/.well-known/security.txt`, with its expiry date checked in `ci`.
 - A page-weight budget: `ci` fails when a page or its JavaScript is over the limit.

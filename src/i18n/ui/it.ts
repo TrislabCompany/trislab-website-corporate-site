@@ -68,6 +68,8 @@ const it: UiStrings = {
   "legal.imprint": "Note legali",
   "legal.privacy": "Informativa sulla privacy",
   "legal.accessibility": "Dichiarazione di accessibilità",
+  "legal.sustainability": "Sostenibilità",
+  "legal.sitemap": "Mappa del sito",
   "imprint.company": "Azienda",
   "imprint.address": "Indirizzo",
   "imprint.registrationNumber": "Numero di registrazione",
