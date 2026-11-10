@@ -1,9 +1,11 @@
 name: ci
 
 # The check every PR needs before it can merge: `pnpm test`, accessibility
-# (pa11y-ci) and Lighthouse CI, on every commit of a PR and every push to main. Deploys nothing. The steps are in checks.yml, so the
-# check keeps the name `ci / ci` that the ruleset of main requires. The job
-# lighthouse-comment then posts the Lighthouse results on the PR.
+# (pa11y-ci) and Lighthouse CI, on every commit of a PR and every push to main.
+# On a PR, only the steps the changed files need run (checks.yml). The steps
+# are in checks.yml, so the check keeps the name `ci / ci` that the ruleset of
+# main requires. The job lighthouse-comment then posts the Lighthouse results
+# on the PR. Deploys nothing.
 
 on:
   pull_request:
@@ -50,17 +52,25 @@ jobs:
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           marker='<!-- lighthouse-report -->'
-          {
-            echo "$marker"
-            if [ -f reports/lighthouse.md ]; then
-              cat reports/lighthouse.md
-            else
-              printf '### Lighthouse\n\nLighthouse did not run on this commit: an earlier step of `ci / ci` failed.\n'
-            fi
-            printf '\nCommit %s, `ci / ci`: %s. The full reports are in the artifact `quality-reports` of [the run](%s).\n' "${SHA:0:7}" "$RESULT" "$RUN_URL"
-          } > comment.md
           id=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
             --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | startswith(\"$marker\"))) | .id" | head -n 1)
+          if [ -f reports/lighthouse.md ]; then
+            body=$(cat reports/lighthouse.md)
+          elif [ -z "$id" ]; then
+            echo "Lighthouse did not run and there is no comment to update."
+            exit 0
+          elif [ "$RESULT" = success ]; then
+            body='Lighthouse did not run on this commit: it changes no page Lighthouse checks (scripts/ci-scope.mjs).'
+          else
+            body='Lighthouse did not run on this commit: an earlier step of `ci / ci` failed.'
+          fi
+          {
+            echo "$marker"
+            case "$body" in "### "*) ;; *) printf '### Lighthouse\n\n' ;; esac
+            echo "$body"
+            echo
+            printf 'Commit %s, `ci / ci`: %s. The full reports are in the artifact `quality-reports` of [the run](%s).\n' "${SHA:0:7}" "$RESULT" "$RUN_URL"
+          } > comment.md
           if [ -n "$id" ]; then
             gh api -X PATCH "repos/$REPO/issues/comments/$id" -F body=@comment.md > /dev/null
           else

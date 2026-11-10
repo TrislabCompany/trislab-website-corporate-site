@@ -9,6 +9,7 @@
 //   - pa11y-ci (axe + HTML_CodeSniffer, WCAG 2 AA) on every URL of the sitemap, settings in .pa11yci.json
 //   - Lighthouse CI on the pages in lighthouserc.json, with the score and Core Web Vitals limits there
 // Reports go to .quality/. QUALITY_BASE_URL checks a running site instead of serving dist/.
+// QUALITY_PAGES (space-separated paths, from scripts/ci-scope.mjs) checks only those pages.
 
 import { spawn } from "node:child_process";
 import { appendFileSync, cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -28,6 +29,18 @@ export function sitemapLocs(xml) {
 export function rebase(url, base) {
   const u = new URL(url, base);
   return new URL(u.pathname + u.search + u.hash, base).href;
+}
+
+/** The pages to check, from QUALITY_PAGES (scripts/ci-scope.mjs); empty means every page. */
+const PAGES = (process.env.QUALITY_PAGES ?? "").split(/\s+/).filter(Boolean);
+
+const trimSlash = (path) => path.replace(/\/+$/, "") || "/";
+
+/** The URLs whose path is one of `pages` (trailing slashes don't count), or every URL when `pages` is empty. */
+export function onlyPages(urls, pages) {
+  if (pages.length === 0) return urls;
+  const want = new Set(pages.map(trimSlash));
+  return urls.filter((u) => want.has(trimSlash(new URL(u).pathname)));
 }
 
 /** pa11y-ci settings with the URLs to check. */
@@ -166,12 +179,22 @@ function summary(markdown) {
   if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, markdown + "\n");
 }
 
-async function a11y(base, env) {
+/** Every page of dist/sitemap-*.xml, on the base URL. */
+function sitemapUrls(base) {
   const files = readdirSync("dist").filter((f) => /^sitemap-\d+\.xml$/.test(f));
-  const urls = [...new Set(files.flatMap((f) => sitemapLocs(readFileSync(`dist/${f}`, "utf8"))).map((u) => rebase(u, base)))];
-  if (urls.length === 0) {
+  return [...new Set(files.flatMap((f) => sitemapLocs(readFileSync(`dist/${f}`, "utf8"))).map((u) => rebase(u, base)))];
+}
+
+async function a11y(base, env) {
+  const all = sitemapUrls(base);
+  if (all.length === 0) {
     console.error("quality: no URLs in dist/sitemap-*.xml.");
     return 1;
+  }
+  const urls = onlyPages(all, PAGES);
+  if (urls.length === 0) {
+    console.log("\naccessibility: none of the pages in QUALITY_PAGES is in the sitemap, nothing to check.");
+    return 0;
   }
   const settings = JSON.parse(readFileSync(".pa11yci.json", "utf8"));
   writeFileSync(`${OUT}/pa11yci.json`, JSON.stringify(pa11yConfig(settings, urls), null, 2));
@@ -192,6 +215,15 @@ async function a11y(base, env) {
 
 async function lighthouse(base, env) {
   const rc = JSON.parse(readFileSync("lighthouserc.json", "utf8"));
+  if (PAGES.length) {
+    // Only the pages the PR changes (QUALITY_PAGES), instead of the list in lighthouserc.json.
+    const paths = onlyPages(sitemapUrls(base), PAGES).map((u) => new URL(u).pathname);
+    if (paths.length === 0) {
+      console.log("\nLighthouse: none of the pages in QUALITY_PAGES is in the sitemap, nothing to check.");
+      return 0;
+    }
+    rc.ci = { ...rc.ci, collect: { ...rc.ci?.collect, url: paths } };
+  }
   writeFileSync(`${OUT}/lighthouserc.json`, JSON.stringify(lighthouseConfig(rc, base, `${OUT}/lighthouse`), null, 2));
   console.log("\nLighthouse CI\n");
   const code = await run("pnpm", ["exec", "lhci", "autorun", `--config=${OUT}/lighthouserc.json`], env);

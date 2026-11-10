@@ -1,6 +1,6 @@
 # Quality checks
 
-Every commit pushed to a PR, and every push to `main`, runs the required check `ci / ci` (`.github/workflows/checks.yml`). The PR cannot merge unless all three steps pass:
+Every commit pushed to a PR, and every push to `main`, runs the required check `ci / ci` (`.github/workflows/checks.yml`). The PR cannot merge unless the steps it needs pass ([What runs for a PR](#what-runs-for-a-pr)):
 
 | Step | Where it runs | What it checks |
 | --- | --- | --- |
@@ -9,6 +9,23 @@ Every commit pushed to a PR, and every push to `main`, runs the required check `
 | Lighthouse CI | **GitHub only** | Lighthouse scores and Core Web Vitals |
 
 Both checks run once `dist/` is built, even if the other one fails, so one CI run reports everything. `scripts/quality.mjs` runs both of them. It copies `dist/` to `.quality/site`, sets the copy up as production with `scripts/write-config.mjs` (`/config.json`, the robots header), and serves it with `wrangler pages dev` on port 8788. So `public/_headers` applies, the Content-Security-Policy among them, as on Cloudflare Pages.
+
+## What runs for a PR
+
+The full run takes about 7 minutes, most of it pa11y and Lighthouse. So on a PR, `scripts/ci-scope.mjs` reads the files the PR changes and runs only the steps they need. The job `ci / ci` always runs and reports, even when it skips every step, so the required check never waits. The job summary lists what ran, what was skipped and which pages were checked.
+
+| The PR changes | What runs |
+| --- | --- |
+| Only `docs/`, `*.md` in the root, `renovate.json`, the deploy and release workflows | Nothing |
+| A content page, `src/content/<collection>/<language>/<page>.md` | `astro check`, the build, the checks on the built site, then pa11y and Lighthouse **only on the pages it shows on**: its own, the list of its collection, the home page and the sitemap page of that language |
+| Anything else in `src/` or `public/`, `astro.config.mjs`, `package.json`, `pnpm-lock.yaml`, `tsconfig.json` | Everything, on every page |
+| A script in `scripts/` | Lint and the unit tests, and the check the script implements (the built-site checks, pa11y, Lighthouse) |
+| `.pa11yci.json` or `lighthouserc.json` | The build and that check |
+| `ci.yml`, `checks.yml`, `.github/actions/`, or a file the script doesn't know | Everything |
+
+Every push to `main` runs everything on every page, whatever the PR ran. A merged PR that broke something the scope skipped shows up there before anything is released. If a file needs another rule, change `checksFor` in `scripts/ci-scope.mjs` and its test.
+
+Locally, `pnpm test` still runs everything. To check only some pages: `QUALITY_PAGES="/en/privacy /sl/privacy" pnpm test:a11y`.
 
 ## Accessibility: pa11y-ci
 

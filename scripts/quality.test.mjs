@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { findChrome, lighthouseConfig, lighthouseMarkdown, pa11yConfig, rebase, sitemapLocs } from "./quality.mjs";
+import { findChrome, lighthouseConfig, lighthouseMarkdown, onlyPages, pa11yConfig, rebase, sitemapLocs } from "./quality.mjs";
 
 test("sitemapLocs reads every <loc>", () => {
   const xml = `<urlset><url><loc>https://trislab.com/en</loc><xhtml:link href="https://trislab.com/sl"/></url><url><loc> https://trislab.com/en/about </loc></url></urlset>`;
@@ -61,4 +61,10 @@ test("lighthouseMarkdown marks each value against its limit", () => {
   assert.equal(en, "| /en | 98 ✅ | 100 | 100 | 100 | 1.2 s ✅ | 0.20 ❌ | 12 ms | 0.9 s |");
   // 0.895 shows as 90 but is under the limit of 0.9.
   assert.equal(contact, "| /en/contact | 90 ❌ | – | – | – | – | – | – | – |");
+});
+
+test("onlyPages keeps the URLs of the given paths, or all of them", () => {
+  const urls = ["http://127.0.0.1:8788/en", "http://127.0.0.1:8788/en/about/", "http://127.0.0.1:8788/sl"];
+  assert.deepEqual(onlyPages(urls, []), urls);
+  assert.deepEqual(onlyPages(urls, ["/en/about", "/en/", "/de"]), urls.slice(0, 2));
 });
