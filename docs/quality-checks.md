@@ -22,7 +22,7 @@ pa11y-ci is a machine check. It finds missing alt text, low contrast, missing la
 
 **Lighthouse CI (LHCI)** runs on the GitHub runner only. Lighthouse timings depend on the machine, so the limits are set for the runner and are checked only there. On a busy laptop the same page scores lower, which would make local results misleading.
 
-**Pages:** the list in `lighthouserc.json` (`ci.collect.url`): home in English and Slovenian, about, services, one service and contact. Each page runs 3 times, and the limits apply to the median run. Lighthouse uses its mobile defaults: a mid-range phone on a slow 4G connection, simulated.
+**Pages:** the list in `lighthouserc.json` (`ci.collect.url`): home in English and Slovenian, about, services, one service, contact and sustainability. Each page runs 3 times, and the limits apply to the median run. Lighthouse uses its mobile defaults: a mid-range phone on a slow 4G connection, simulated.
 
 | Limit | Value | Why |
 | --- | --- | --- |
@@ -53,7 +53,8 @@ Lighthouse doesn't run locally: `node scripts/quality.mjs lighthouse` stops with
 ## Read a failure
 
 - **In the CI log:** pa11y-ci prints each failing page with the rule, the element and the fix it suggests. Lighthouse CI prints each limit that failed, with its value.
-- **In the job summary:** a table of failing pages and the Lighthouse scores per page.
+- **On the PR:** a comment with the Lighthouse table, each score and Core Web Vital per page marked ✅ or ❌ against its limit. The job `ci / lighthouse-comment` updates the same comment on every commit, so the PR shows the latest one. It isn't a required check, and it skips PRs from forks, whose token can't write.
+- **In the job summary:** a table of failing pages and the same Lighthouse table.
 - **In the artifact `quality-reports`**, kept for 14 days: `pa11y.json`, plus the full Lighthouse HTML reports (`lighthouse/*.html`). Open a report in a browser to see what slowed a page down or what moved.
 
 Lighthouse timings change a little from run to run. If a limit fails by a hair and the PR didn't touch that page, run the job again once. If it fails again, it's real.

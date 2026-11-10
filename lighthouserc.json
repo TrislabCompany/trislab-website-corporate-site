@@ -1,7 +1,7 @@
 {
   "ci": {
     "collect": {
-      "url": ["/en", "/sl", "/en/about", "/en/services", "/en/services/cloud-services", "/en/contact"],
+      "url": ["/en", "/sl", "/en/about", "/en/services", "/en/services/cloud-services", "/en/contact", "/en/sustainability"],
       "numberOfRuns": 3,
       "settings": {
         "chromeFlags": "--headless=new --no-sandbox --disable-dev-shm-usage"

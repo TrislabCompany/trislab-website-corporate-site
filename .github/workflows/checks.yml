@@ -60,5 +60,6 @@ jobs:
           path: |
             .quality/pa11y.json
             .quality/lighthouse/
+            .quality/lighthouse.md
           if-no-files-found: ignore
           retention-days: 14

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { findChrome, lighthouseConfig, pa11yConfig, rebase, sitemapLocs } from "./quality.mjs";
+import { findChrome, lighthouseConfig, lighthouseMarkdown, pa11yConfig, rebase, sitemapLocs } from "./quality.mjs";
 
 test("sitemapLocs reads every <loc>", () => {
   const xml = `<urlset><url><loc>https://trislab.com/en</loc><xhtml:link href="https://trislab.com/sl"/></url><url><loc> https://trislab.com/en/about </loc></url></urlset>`;
@@ -31,4 +31,34 @@ test("findChrome prefers CHROME_PATH, then looks in the usual places", () => {
   assert.equal(findChrome({}, "linux", (p) => p === "/usr/bin/chromium"), "/usr/bin/chromium");
   assert.equal(findChrome({}, "linux", () => false), undefined);
   assert.equal(findChrome({ PROGRAMFILES: "C:\\PF" }, "win32", (p) => p === "C:\\PF\\Google\\Chrome\\Application\\chrome.exe"), "C:\\PF\\Google\\Chrome\\Application\\chrome.exe");
+});
+
+test("lighthouseMarkdown marks each value against its limit", () => {
+  const rc = {
+    ci: {
+      assert: {
+        assertions: {
+          "categories:performance": ["error", { minScore: 0.9 }],
+          "largest-contentful-paint": ["error", { maxNumericValue: 2500 }],
+          "cumulative-layout-shift": ["error", { maxNumericValue: 0.1 }],
+        },
+      },
+    },
+  };
+  const md = lighthouseMarkdown(
+    [
+      {
+        url: "http://127.0.0.1:8788/en",
+        scores: { performance: 0.98, accessibility: 1, "best-practices": 1, seo: 1 },
+        metrics: { "largest-contentful-paint": 1234, "cumulative-layout-shift": 0.2, "total-blocking-time": 12.4, "first-contentful-paint": 900 },
+      },
+      { url: "http://127.0.0.1:8788/en/contact", scores: { performance: 0.895 }, metrics: {} },
+    ],
+    rc,
+  );
+  const [header, , en, contact] = md.split("\n");
+  assert.equal(header, "| Page | Performance | Accessibility | Best practices | SEO | LCP | CLS | TBT | FCP |");
+  assert.equal(en, "| /en | 98 ✅ | 100 | 100 | 100 | 1.2 s ✅ | 0.20 ❌ | 12 ms | 0.9 s |");
+  // 0.895 shows as 90 but is under the limit of 0.9.
+  assert.equal(contact, "| /en/contact | 90 ❌ | – | – | – | – | – | – | – |");
 });
