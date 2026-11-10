@@ -22,5 +22,5 @@ test("an address never leaves dist/", () => {
 test("a built page has the address it is served at", () => {
   assert.equal(pathFor("index.html"), "/");
   assert.equal(pathFor("en.html"), "/en");
-  assert.equal(pathFor(join("en", "services", "cloud-services.html")), "/en/services/cloud-services");
+  assert.equal(pathFor(join("en", "services", "first-service.html")), "/en/services/first-service");
 });

@@ -23,6 +23,8 @@ export interface SiteSettings<L extends string> {
   languages: readonly L[];
   /** The language "/" leads to, and the target of hreflang x-default. */
   defaultLanguage: L;
+  /** The colour of the browser's address bar on a phone: the site's background or brand colour, as "#rrggbb". */
+  themeColor: string;
 
   company: {
     /** The name people know, for example "Trislab". */

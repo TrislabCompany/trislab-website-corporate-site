@@ -33,9 +33,9 @@ flowchart LR
 | Deploy to staging | `deploy-staging.yml` | When *Release new version* succeeds; by hand | Deploys the newest tag, by semantic version, to `staging`, from its `site-vX.Y.Z.zip`, and records the tag as staging's deployment |
 | Promote to production | `promote.yml` | By hand, no input | Reads the tag staging runs, waits for a reviewer of `production`, and deploys the same `site-vX.Y.Z.zip` there |
 
-`pages-deploy.yml` is the one deploy job the last three call. It writes the Environment's `/config.json` and robots header into the files, and in production takes the environment badge out of the pages (`scripts/write-config.mjs`, [configuration.md](configuration.md)), deploys them with `wrangler pages deploy`, and records the deploy as a GitHub deployment of the Environment.
+`pages-deploy.yml` is the one deploy job the last three call. It writes the Environment's `/config.json` into the files, and in production takes the environment badge out of the pages (`scripts/write-config.mjs`, [configuration.md](configuration.md)), deploys them with `wrangler pages deploy`, and records the deploy as a GitHub deployment of the Environment.
 
-Only the build for dev is made from the commit at deploy time. staging and production deploy the files the release built, so production gets exactly what was checked on staging; only `/config.json` and the robots header differ.
+Only the build for dev is made from the commit at deploy time. staging and production deploy the files the release built, so production gets exactly what was checked on staging; only `/config.json` differs.
 
 ## Versions and release notes
 
@@ -110,6 +110,6 @@ The Pages project, the hostnames, DNS, Access, the GitHub Environments and their
 
 The token may only edit Pages (`Cloudflare Pages: Edit`); it has no DNS or zone rights. Cloudflare cannot limit it to one project, so it is kept only in the Environments, and production deploys need a reviewer.
 
-**Making the site public:** add `trislab.com` (and the `www` redirect) to the Pages project, set `SITE_URL` to `https://trislab.com` and `ROBOTS_INDEX` to `true` on the `production` Environment, remove the Access application of production, and turn `prod-corporate-site.trislab.com` into a permanent redirect to `trislab.com`. Then promote again so the robots header changes. `src/site.config.ts` already names `https://trislab.com`, so no rebuild is needed.
+**Making the site public:** add `trislab.com` (and the `www` redirect) to the Pages project, set `SITE_URL` to `https://trislab.com` on the `production` Environment, remove the Access application of production, and turn `prod-corporate-site.trislab.com` into a permanent redirect to `trislab.com`. `src/site.config.ts` already names `https://trislab.com`, so no rebuild is needed. Nothing else switches indexing on: `dev` and `staging` are protected by Cloudflare Access, which the infrastructure enforces, and `robots.txt` and the sitemap are the same in every Environment.
 
 **Tearing it down:** a PR in `tl-cloud-infrastructure` removes the site's entries. Its apply deletes the custom domains, DNS records, Access applications, the Pages project with all its deployments, the GitHub Environments with their variables and secret, and revokes the token. The repository is archived, not deleted, so its name is never reused. To retire one Environment, remove only its entries.

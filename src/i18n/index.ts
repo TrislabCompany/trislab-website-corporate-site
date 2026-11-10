@@ -18,7 +18,7 @@ export const defaultLanguage: Lang = site.defaultLanguage;
 
 /** Add a file to ui/ and a line here for each new language. A language not in
  * src/site.config.ts may stay here; it is never used. */
-const ui: Record<Lang, UiStrings> & Record<string, UiStrings> = { en, sl, hr, sr, it };
+const ui: Record<Lang, UiStrings> & Record<string, UiStrings> = { en, sl, hr, it, sr };
 
 /** True when the URLs carry a language prefix. */
 export const prefixed = languages.length > 1;
@@ -58,9 +58,19 @@ export function languagePaths() {
   return languages.map((lang) => ({ params: { lang: prefixed ? lang : undefined }, props: { lang } }));
 }
 
+/** The territory each supported language code is written in, for Open Graph (en_GB) and number and date formats. */
+const territory: Record<string, string> = {
+  en: "GB", sl: "SI", hr: "HR", sr: "RS", it: "IT", de: "DE", fr: "FR", es: "ES", pt: "PT", nl: "NL", pl: "PL", cs: "CZ", sk: "SK", hu: "HU", ro: "RO", bg: "BG", el: "GR", sv: "SE", da: "DK", fi: "FI", nb: "NO",
+};
+
 /** The BCP 47 tag for dates and numbers. */
 export function locale(lang: Lang): string {
   // Serbian is written in the Latin script on this site.
-  if (lang === "sr") return "sr-Latn";
+  if ((lang as string) === "sr") return "sr-Latn";
   return lang === "en" ? "en-GB" : lang;
+}
+
+/** The Open Graph locale, language_TERRITORY: "en_GB", "sl_SI". A code not in the list above repeats itself ("xx_XX"): add it there. */
+export function ogLocale(lang: Lang): string {
+  return `${lang}_${territory[lang] ?? lang.toUpperCase()}`;
 }

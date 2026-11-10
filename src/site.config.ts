@@ -22,6 +22,7 @@ const site: SiteSettings<Lang> = {
   },
   languages,
   defaultLanguage: "en",
+  themeColor: "#0f172a",
 
   company: {
     name: "Trislab",
