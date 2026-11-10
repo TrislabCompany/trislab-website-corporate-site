@@ -27,7 +27,7 @@ flowchart LR
 
 | Workflow | File | Starts | What it does |
 | --- | --- | --- | --- |
-| ci | `ci.yml` (steps in `checks.yml`) | Every PR and push to `main` | `pnpm test`. The check `ci / ci` must pass before a PR merges. Deploys nothing |
+| ci | `ci.yml` (steps in `checks.yml`) | Every commit of a PR, and every push to `main` | `pnpm test`, accessibility (pa11y-ci) and Lighthouse CI. The check `ci / ci` must pass before a PR merges. Deploys nothing |
 | Deploy to dev | `deploy-dev.yml` | Every push to `main`; by hand to deploy the newest commit again | Builds the commit and deploys it to `dev` |
 | Release new version | `release.yml` | By hand, from `main`, with `patch`, `minor` or `major` | Picks the next version, writes the notes from the commit messages since the previous version, runs `pnpm test`, builds the site once, pushes an annotated tag `vX.Y.Z` on the newest commit of `main`, and creates the GitHub Release with the notes and the built site, `site-vX.Y.Z.zip` |
 | Deploy to staging | `deploy-staging.yml` | When *Release new version* succeeds; by hand | Deploys the newest tag, by semantic version, to `staging`, from its `site-vX.Y.Z.zip`, and records the tag as staging's deployment |
@@ -60,7 +60,7 @@ gh api "repos/{owner}/{repo}/deployments?environment=staging&task=deploy:pages&p
 
 ### Ship a change to dev
 
-1. Branch from `main`, commit, run `pnpm test`, and open a PR.
+1. Branch from `main`, commit, run `pnpm test` and `pnpm test:a11y`, and open a PR.
 2. `ci / ci` passes, a code owner approves, and you squash-merge.
 3. *Deploy to dev* runs on the merge: `gh run watch $(gh run list --workflow deploy-dev.yml --limit 1 --json databaseId --jq '.[0].databaseId')`.
 4. Check the change on dev-corporate-site.trislab.com.

@@ -1,7 +1,8 @@
 name: checks
 
 # The steps of the check `ci / ci`, called by ci.yml: type check, lint, unit
-# tests, build, and the checks on the built site (docs/getting-started.md).
+# tests, build, the checks on the built site, then accessibility (pa11y-ci)
+# and Lighthouse CI (docs/getting-started.md, docs/quality-checks.md).
 
 on:
   workflow_call:
@@ -11,7 +12,7 @@ permissions: {}
 jobs:
   ci:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 30
     permissions:
       contents: read
     steps:
@@ -21,6 +22,38 @@ jobs:
 
       - uses: ./.github/actions/setup
 
-      - run: pnpm test
+      - id: test
+        run: pnpm test
         env:
           ASTRO_TELEMETRY_DISABLED: 1
+
+      # Accessibility and Lighthouse on dist/, served as Cloudflare Pages
+      # serves it (docs/quality-checks.md). They are steps of this job, so
+      # `ci / ci` fails with them. Both run once dist/ is built, even when
+      # the other one fails.
+
+      # pa11y-ci, WCAG 2 AA, every page of the sitemap. Also runs locally.
+      - name: Accessibility (pa11y-ci)
+        if: ${{ !cancelled() && steps.test.outcome == 'success' }}
+        run: pnpm test:a11y
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+
+      # Lighthouse CI (LHCI): scores and Core Web Vitals limits of
+      # lighthouserc.json. Runs on GitHub only, where the limits are set.
+      - name: Lighthouse CI
+        if: ${{ !cancelled() && steps.test.outcome == 'success' }}
+        run: node scripts/quality.mjs lighthouse
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+
+      - name: Keep the reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: quality-reports
+          path: |
+            .quality/pa11y.json
+            .quality/lighthouse/
+          if-no-files-found: ignore
+          retention-days: 14

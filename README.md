@@ -72,8 +72,10 @@ What works on the first deploy, with no change:
 | TypeScript | 5.9.3 |
 | ESLint | 10.13.0, with `typescript-eslint` 8.72.1 and `eslint-plugin-astro` 3.2.1 |
 | Wrangler | 4.152.0, to deploy to Cloudflare Pages and to serve `dist/` locally |
+| pa11y-ci | 5.0.0, the accessibility check |
+| Lighthouse CI | 0.16.0, the performance and Core Web Vitals check |
 
-Renovate will keep the versions current; until it runs, the platform team bumps them.
+Renovate proposes updates every Monday, and Dependabot raises security fixes as soon as they are published ([dependencies.md](docs/dependencies.md)). Every update passes the same checks as any other change ([quality-checks.md](docs/quality-checks.md)).
 
 ## Repository layout
 
@@ -89,7 +91,7 @@ Renovate will keep the versions current; until it runs, the platform team bumps 
 ## First steps
 
 1. **Set the site's facts:** languages, company, contact and legal pages in `src/site.config.ts` ([site-settings.md](docs/site-settings.md)).
-2. **Run it locally:** `pnpm install`, then `pnpm dev`, and open <http://localhost:4321>. Run `pnpm test` before you push. [getting-started.md](docs/getting-started.md) also runs it as Cloudflare Pages serves it.
+2. **Run it locally:** `pnpm install`, then `pnpm dev`, and open <http://localhost:4321>. Run `pnpm test` and `pnpm test:a11y` before you push. [getting-started.md](docs/getting-started.md) also runs it as Cloudflare Pages serves it.
 3. **Open your first PR:** change a page in `src/pages/[...lang]/`, push a branch and open a PR. `ci / ci` must pass and a code owner must approve.
 4. **Deploy, release and promote:** a merge to `main` deploys to dev, *Release new version* tags a version and deploys it to staging, and *Promote to production* moves it to production after a reviewer approves. `pnpm status` shows what runs where; [deployment.md](docs/deployment.md) explains how it works.
 

@@ -5,6 +5,8 @@ import StructuredData from "../components/StructuredData.astro";
 import { defaultLanguage, languages, localizedPath, t, unlocalizedPath, type Lang } from "../i18n";
 import site from "../site.config";
 import "../styles/global.css";
+// The Latin subset of Inter, loaded early so text is drawn once, in Inter.
+import interLatin from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
 
 interface Props {
   title: string;
@@ -34,6 +36,7 @@ const ogLocale: Record<Lang, string> = { en: "en_GB", sl: "sl_SI", hr: "hr_HR", 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex" />}
+    <link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{fullTitle}</title>
     {!noindex && <link rel="canonical" href={absolute(lang)} />}
