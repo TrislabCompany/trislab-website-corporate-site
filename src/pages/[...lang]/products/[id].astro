@@ -2,6 +2,7 @@
 import { render, type CollectionEntry } from "astro:content";
 import ContactCta from "../../../components/ContactCta.astro";
 import Icon from "../../../components/Icon.astro";
+import { seoProps } from "../../../components/seo/fields";
 import { localizedPath, t, type Lang } from "../../../i18n";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import { itemPaths } from "../../../lib/items";
@@ -19,7 +20,7 @@ const { Content } = await render(entry);
 const { vendorProduct, features } = entry.data;
 ---
 
-<BaseLayout title={entry.data.title} description={entry.data.summary} lang={lang} available={available}>
+<BaseLayout {...seoProps(entry.data)} description={entry.data.summary} lang={lang} available={available}>
   <article class="prose">
     <p class="eyebrow"><a href={localizedPath(lang, "/products")}>{t(lang, "nav.products")}</a></p>
     <Icon name={entry.data.icon} />
