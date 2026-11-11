@@ -35,7 +35,7 @@ flowchart LR
 
 `pages-deploy.yml` is the one deploy job the last three call. It writes the Environment's `/config.json` into the files, and in production takes the environment badge out of the pages (`scripts/write-config.mjs`, [configuration.md](configuration.md)), deploys them with `wrangler pages deploy`, and records the deploy as a GitHub deployment of the Environment.
 
-Only the build for dev is made from the commit at deploy time. staging and production deploy the files the release built, so production gets exactly what was checked on staging; only `/config.json` differs.
+Only the build for dev is made from the commit at deploy time. staging and production deploy the files the release built, so production gets exactly what was checked on staging; only `/config.json` differs, and in production the environment badge is gone.
 
 ## Versions and release notes
 
