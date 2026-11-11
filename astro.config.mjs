@@ -1,7 +1,8 @@
 // @ts-check
-import { writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import sitemap from "@astrojs/sitemap";
 import { defineConfig } from "astro/config";
+import { sitemapWithoutNoindex, withDefaultLanguage } from "./src/components/seo/sitemap.mjs";
 import site, { languages } from "./src/site.config";
 
 // With two or more languages every page lives under its language (/en,
@@ -23,14 +24,18 @@ function canonical(url) {
 // "/" leads to the default language. Astro's redirect is a page with a
 // meta refresh, which search engines treat as weaker than a real redirect, so
 // Cloudflare Pages also gets dist/_redirects: a 301 from "/" that it answers
-// before it serves any file. The Astro page stays for `pnpm preview`.
+// before it serves any file. The Astro page stays for `pnpm preview`. A
+// site's own redirects (public/_redirects, which Astro copies to dist/ first,
+// such as the addresses of an earlier site) are kept after that line.
 /** @type {import("astro").AstroIntegration} */
 const rootRedirect = {
   name: "root-redirect",
   hooks: {
     "astro:build:done": async ({ dir }) => {
       if (!prefixed) return;
-      await writeFile(new URL("_redirects", dir), `/ /${site.defaultLanguage} 301\n`);
+      const file = new URL("_redirects", dir);
+      const own = await readFile(file, "utf8").catch(() => "");
+      await writeFile(file, `/ /${site.defaultLanguage} 301\n${own}`);
     },
   },
 };
@@ -43,15 +48,19 @@ export default defineConfig({
   redirects: prefixed ? { "/": `/${site.defaultLanguage}` } : {},
   integrations: [
     rootRedirect,
-    // sitemap-index.xml with every page in every language, and the other
-    // languages of each page as alternates.
+    // sitemap-index.xml with every page in every language, the other
+    // languages of each page and x-default as alternates, as in each page's
+    // head. Pages marked noindex are taken out after it (docs/search-engines.md).
     sitemap({
       filter: (page) => !(prefixed && page === root),
       // Same addresses as the canonical links: no trailing slash.
       serialize: (item) => ({
         ...item,
         url: canonical(item.url),
-        links: item.links?.map((link) => ({ ...link, url: canonical(link.url) })),
+        links: withDefaultLanguage(
+          item.links?.map((link) => ({ ...link, url: canonical(link.url) })),
+          site.defaultLanguage,
+        ),
       }),
       i18n: prefixed
         ? {
@@ -60,6 +69,7 @@ export default defineConfig({
           }
         : undefined,
     }),
+    sitemapWithoutNoindex(site.url),
   ],
   build: {
     // Styles and scripts go to files under /_astro/, never inline, so the

@@ -1,5 +1,6 @@
 import { glob } from "astro/loaders";
 import { defineCollection, z } from "astro:content";
+import { seoFields } from "./components/seo/fields";
 
 // Content is kept per language: src/content/<collection>/<language>/<name>.md.
 // The same file name in two languages is the same item translated; its id is
@@ -12,35 +13,39 @@ const icon = z.enum(["code", "cloud", "shield", "platform", "data", "key", "iden
 // One page per service: /<lang>/services/<name>.
 const services = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/services" }),
-  schema: z.object({
-    title: z.string(),
-    summary: z.string(),
-    icon,
-    /** Position in lists, lowest first. */
-    order: z.number().int(),
-    tags: z.array(z.string()).default([]),
-  }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      summary: z.string(),
+      icon,
+      /** Position in lists, lowest first. */
+      order: z.number().int(),
+      tags: z.array(z.string()).default([]),
+      ...seoFields(image),
+    }),
 });
 
 // One page per product: /<lang>/products/<name>. Only launched products, the
 // Netwrix pillars and the NIS2 page.
 const products = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/products" }),
-  schema: z.object({
-    title: z.string(),
-    summary: z.string(),
-    icon,
-    order: z.number().int(),
-    /** The group the products page lists it under. */
-    group: z.enum(["saas", "security", "compliance"]),
-    /** Shown only once Trislab confirms it. */
-    status: z.enum(["live", "pilot", "planned"]).optional(),
-    /** The vendor's product, for example "Netwrix Auditor". */
-    vendorProduct: z.string().optional(),
-    /** A page with more about the product, as an absolute URL. */
-    link: z.string().url().optional(),
-    features: z.array(z.string()).default([]),
-  }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      summary: z.string(),
+      icon,
+      order: z.number().int(),
+      /** The group the products page lists it under. */
+      group: z.enum(["saas", "security", "compliance"]),
+      /** Shown only once Trislab confirms it. */
+      status: z.enum(["live", "pilot", "planned"]).optional(),
+      /** The vendor's product, for example "Netwrix Auditor". */
+      vendorProduct: z.string().optional(),
+      /** A page with more about the product, as an absolute URL. */
+      link: z.string().url().optional(),
+      features: z.array(z.string()).default([]),
+      ...seoFields(image),
+    }),
 });
 
 // The texts of the privacy policy, the accessibility statement and the
