@@ -101,3 +101,7 @@ Renovate proposes updates every Monday, and Dependabot raises security fixes as 
 - [Site settings](docs/site-settings.md): languages, contact and legal pages, structured data, `security.txt` and the page-weight budget.
 - [Configuration](docs/configuration.md): the settings, `/config.json`, and how to add a `PUBLIC_` setting.
 - [Deployment](docs/deployment.md): Environments, deploy, release and promote, rollback, and how the site is set up and torn down.
+
+## Licence
+
+Proprietary: [LICENSE](LICENSE). The code is public to read, but it belongs to Trislab d.o.o., and only Trislab, and the clients of the applications Trislab delivers under a written agreement, may use it. Cloning or forking it for use, copying, redistribution and training AI models on it are not allowed. Material of others, such as the dependencies and a client's texts, logos and photos, keeps its owner's rights and its own licence.
